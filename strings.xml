@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <string name="dwb_options">Damage Workbench</string>
+  <string name="dwb_enabled">Use Damage Workbench (this user)</string>
+  <string name="dwb_on">On</string>
+  <string name="dwb_off">Off</string>
+  <string name="dwb_confirmation">Confirm hits before damage adjustment</string>
+  <string name="dwb_ask">Ask GM</string>
+  <string name="dwb_auto">Automatic</string>
+</root>

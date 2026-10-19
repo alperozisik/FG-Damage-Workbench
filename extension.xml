@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root version="5.1" release="1">
+  <properties>
+    <name>Damage Workbench</name>
+    <version>0.3.2</version>
+    <author>Alper</author>
+    <description>Review, roll, reroll and apply weapon and cantrip damage for any 5E campaign.</description>
+    <ruleset><name>5E</name></ruleset>
+    <loadorder>150</loadorder>
+  </properties>
+  <base>
+    <script name="DWBModel" file="scripts/model.lua" />
+    <script name="DWBLayout" file="scripts/layout.lua" />
+    <script name="DWBFeatures" file="scripts/features.lua" />
+    <script name="DWBEffectDrop" file="scripts/effect_drop.lua" />
+    <script name="DWBPreferences" file="scripts/preferences.lua" />
+    <script name="DWB" file="scripts/manager.lua" />
+    <includefile source="ui/windows.xml" />
+    <includefile source="strings.xml" />
+  </base>
+</root>

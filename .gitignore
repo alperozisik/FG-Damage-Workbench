@@ -1,0 +1,7 @@
+.reference/
+.private/
+dist/
+__pycache__/
+.venv/
+*.log
+*.bak

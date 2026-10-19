@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <icon name="dwb_selection_solo" file="ui/selection_solo.png" />
+  <icon name="dwb_selection_start" file="ui/selection_start.png" />
+  <icon name="dwb_selection_middle" file="ui/selection_middle.png" />
+  <icon name="dwb_selection_end" file="ui/selection_end.png" />
+
+  <template name="dwb_button"><button_text><script file="ui/button.lua" /></button_text></template>
+  <template name="dwb_add"><button_iadd_base><script>local callback; function configure(fn) callback=fn; end function onButtonPress() if callback then callback(); end end</script></button_iadd_base></template>
+  <template name="dwb_label"><stringcontrol><font>sheetlabel</font><static /></stringcontrol></template>
+  <template name="dwb_text"><stringcontrol><font>sheettext</font><static /></stringcontrol></template>
+  <template name="dwb_zonehost"><subwindow><activate /><fastinit /></subwindow></template>
+  <windowclass name="dwb_panel">
+    <frame>utilitybox</frame>
+    <placement><size width="740" height="590" /><nosave /></placement>
+    <sizelimits><minimum width="560" height="590" /><maximum width="1600" height="1100" /><dynamic /></sizelimits>
+    <noclose />
+    <windowmenu><nolink /><norecord /><right>close</right></windowmenu>
+    <script file="ui/panel.lua" />
+    <sheetdata>
+      <genericcontrol name="paper"><bounds>18,45,-36,-60</bounds><frame name="groupbox" offset="0,0,0,0" /><disabled /></genericcontrol>
+      <stringcontrol name="heading"><bounds>22,14,-40,24</bounds><font>windowtitle</font><static>Damage Adjustment</static></stringcontrol>
+      <windowmenubar_utilitybox name="menubar" />
+      <buttoncontrol name="edit"><bounds>44,68,24,24</bounds><frame name="windowmenubar_button" offset="2,2,2,2" /><state icon="button_toolbar_locked_true" /><state icon="button_toolbar_locked_false" /><tooltip text="Edit damage type list" /><script>function onInit() setColor(ColorManager.getWindowMenuIconColor()); end function onButtonPress() window.toggleEdit(); end</script></buttoncontrol>
+      <button_text_toggle name="critical"><bounds>96,68,122,24</bounds><text>Critical</text><script>function onButtonPress() window.toggleCritical(); end</script></button_text_toggle>
+      <stringcontrol name="context"><bounds>22,85,-44,22</bounds><font>sheettext</font><static /></stringcontrol>
+      <subwindow name="viewport"><bounds>44,170,-88,270</bounds><class>dwb_viewport</class><activate /><fastinit /></subwindow>
+      <genericcontrol name="hscroll"><bounds>44,444,-88,14</bounds><backcolor>FF263239</backcolor><tooltip text="Scroll damage types horizontally" /><script file="ui/hscroll.lua" /></genericcontrol>
+      <genericcontrol name="scrollhandle"><bounds>44,446,32,10</bounds><backcolor>FFBB9F5D</backcolor><script>
+        function onClickDown(button,x,y) return window.hscroll.onClickDown(button,x+window.hscroll.thumbOffset(),y); end
+        function onClickRelease(button,x,y) return window.hscroll.onClickRelease(button,x+window.hscroll.thumbOffset(),y); end
+        function onDragStart(button,x,y,drag) return window.hscroll.onDragStart(button,x+window.hscroll.thumbOffset(),y,drag); end
+        function onDrag(button,x,y,drag) return window.hscroll.onDrag(button,x+window.hscroll.thumbOffset(),y,drag); end
+        function onDragEnd(drag) window.hscroll.onDragEnd(drag); end
+        function onWheel(notches) return window.hscroll.onWheel(notches); end
+      </script></genericcontrol>
+      <stringcontrol name="status"><bounds>22,-90,-44,20</bounds><font>sheettext</font><static /></stringcontrol>
+      <button_text_toggle name="magical"><bounds>300,-65,140,22</bounds><text>Magical</text><script>function onButtonPress() window.toggleMagical(); end</script></button_text_toggle>
+      <button_text name="roll"><bounds>300,-35,140,24</bounds><text>Roll</text><script>function onButtonPress() window.rollOrUndo(); end</script></button_text>
+      <button_text name="save"><bounds>452,-35,70,24</bounds><text>Save</text><script>function onButtonPress() window.savePreset(); end</script></button_text>
+      <button_text name="apply"><bounds>300,-35,180,24</bounds><text>Apply Damage</text><invisible /><script>function onButtonPress() window.applyDamage(); end</script></button_text>
+      <resize><anchored><right offset="-5" /><bottom offset="-5" /></anchored></resize>
+    </sheetdata>
+  </windowclass>
+  <windowclass name="dwb_viewport">
+    <noclose />
+    <script>
+      local panel;
+      function setPanel(w) panel=w; end
+      function onDrop(x,y,drag) if panel then return panel.onDrop(x,y,drag); end end
+      function onWheel(notches) if panel then panel.scrollZones(-notches*32); end return true; end
+      function onClickDown(button) return true; end
+    </script>
+    <sheetdata />
+  </windowclass>
+  <windowclass name="dwb_zone">
+    <frame>groupbox</frame><noclose />
+    <script file="ui/zone.lua" />
+    <sheetdata>
+      <stringcontrol name="title"><bounds>16,14,104,20</bounds><font>sheetlabel</font><static /></stringcontrol>
+      <comboboxc name="dtype"><bounds>16,14,86,20</bounds><listmaxsize>8</listmaxsize><invisible /><script>
+        function onSelect(value) window.changeType(value); end
+        function onClickDown(button,x,y) if button==2 then return true; end return super.onClickDown(button,x,y); end
+        function onClickRelease(button,x,y) if button==2 then return true; end return super.onClickRelease(button,x,y); end
+      </script></comboboxc>
+      <button_idelete_base name="remove"><bounds>108,14,20,20</bounds><script>function onButtonPress() window.deleteZone(); end</script></button_idelete_base>
+      <windowlist name="dice"><bounds>12,42,96,160</bounds><class>dwb_die</class><columns width="32" fillwidth="true" /><spacing>0</spacing><skipempty /><script>
+        function onDrop(x,y,drag) return window.onDrop(x,y,drag); end
+        function onClickDown(button) return button==2; end
+        function onClickRelease(button) return button==2; end
+      </script></windowlist>
+      <scrollbar name="dice_scroll"><bounds>116,42,8,160</bounds><target>dice</target></scrollbar>
+      <stringcontrol name="total"><bounds>16,220,104,20</bounds><font>sheetnumber</font><center /><static /><invisible /></stringcontrol>
+    </sheetdata>
+  </windowclass>
+  <windowclass name="dwb_die">
+    <sizelimits><minimum width="32" height="32" /></sizelimits><noclose />
+    <script file="ui/die.lua" />
+    <sheetdata>
+      <genericcontrol name="highlight"><bounds>0,0,32,32</bounds><icon>dwb_selection_solo</icon><disabled /><invisible /></genericcontrol>
+      <genericcontrol name="face"><bounds>0,0,32,32</bounds><script>
+        function onClickDown(button,x,y) return window.click(button); end
+        function onClickRelease(button,x,y) return window.release(button); end
+        function onMenuSelection(selection) window.deleteFromMenu(selection); end
+        function onDoubleClick(x,y) return window.doubleClick(); end
+        function onDragStart(button,x,y,draginfo) return window.drag(draginfo); end
+        function onDrop(x,y,draginfo) return window.onDrop(x,y,draginfo); end
+      </script></genericcontrol>
+      <basicnumberc name="fixed"><bounds>4,6,24,20</bounds><invisible /><script>
+        function onValueChanged() window.fixedChanged(); end
+        function onDrop(x,y,draginfo) return window.onDrop(x,y,draginfo); end
+        function onClickDown(button,x,y) if button==2 then return true; end if super.onClickDown then return super.onClickDown(button,x,y); end end
+        function onClickRelease(button,x,y) if button==2 then return true; end if super.onClickRelease then return super.onClickRelease(button,x,y); end end
+        function onWheel(notches) if Input.isControlPressed() then setValue(getValue()+notches); return true; end end
+      </script></basicnumberc>
+    </sheetdata>
+  </windowclass>
+  <windowclass name="dwb_approvals">
+    <frame>utilitybox</frame><placement><size width="550" height="360" /><nosave /></placement>
+    <sizelimits><minimum width="550" height="300" /><dynamic /></sizelimits>
+    <windowmenu><simple /></windowmenu>
+    <script file="ui/approvals.lua" />
+    <sheetdata>
+      <genericcontrol name="paper"><bounds>18,45,-36,-60</bounds><frame name="groupbox" offset="0,0,0,0" /><disabled /></genericcontrol>
+      <stringcontrol name="heading"><bounds>24,15,-50,24</bounds><font>windowtitle</font><static>Confirm hit</static></stringcontrol>
+      <stringcontrol name="help"><bounds>44,66,-88,48</bounds><font>sheettext</font><multilinespacing>20</multilinespacing><static>Resolve late modifiers first.&#10;Confirming announces HIT and opens the owner's damage panel.</static></stringcontrol>
+      <windowlist name="list"><bounds>24,100,-48,-120</bounds><class>dwb_approval</class><skipempty /></windowlist>
+      <windowmenubar_utilitybox name="menubar" />
+    </sheetdata>
+  </windowclass>
+  <windowclass name="dwb_approval">
+    <sizelimits><minimum height="100" /></sizelimits>
+    <script>local id; function setData(ctx) id=ctx.id; label.setValue(ctx.publicName .. " / " .. ctx.label); end
+      function confirm() DWB.approve(id); end function reject() DWB.reject(id); end</script>
+    <sheetdata>
+      <stringcontrol name="label"><bounds>0,0,-2,22</bounds><font>sheetlabel</font><static /></stringcontrol>
+      <button_text name="yes"><anchored width="130" height="24"><top offset="40" /><left anchor="center" offset="-123" /></anchored><text>Confirm HIT</text><script>function onButtonPress() window.confirm(); end</script></button_text>
+      <button_text name="no"><anchored width="100" height="24"><top offset="40" /><left anchor="center" offset="23" /></anchored><text>Cancel</text><script>function onButtonPress() window.reject(); end</script></button_text>
+    </sheetdata>
+  </windowclass>
+  <windowclass name="dwb_save">
+    <frame>utilitybox</frame><placement><size width="450" height="230" /><nosave /></placement>
+    <windowmenu><simple /></windowmenu>
+    <script>local p; function setPlan(plan) p=DWBModel.copy(plan); name.setValue(p.label); paper.setStaticBounds(18,45,414,163); end
+      function updateName() if p then handle.setText(name.getValue()); end end
+      function dragPreset(drag) if not p then return false; end
+        drag.setType("dwbpreset"); drag.setStringData(Utility.encodeJSON(DWBModel.preset(p,name.getValue())));
+        drag.setDescription(name.getValue()); drag.setIcon("action_damage"); return true; end</script>
+    <sheetdata>
+      <genericcontrol name="paper"><bounds>18,45,-36,-60</bounds><frame name="groupbox" offset="0,0,0,0" /><disabled /></genericcontrol>
+      <stringcontrol name="heading"><bounds>22,15,400,24</bounds><font>windowtitle</font><static>Save damage layout</static></stringcontrol>
+      <stringcontrol name="name"><bounds>44,72,362,24</bounds><frame name="fieldlight" offset="5,4,5,4" /><font>sheettext</font><script>function onValueChanged() window.updateName(); end</script></stringcontrol>
+      <button_text name="handle"><bounds>44,120,362,24</bounds><text>Damage</text><script>function onDragStart(button,x,y,drag) return window.dragPreset(drag); end</script></button_text>
+      <stringcontrol name="help"><bounds>44,166,362,30</bounds><font>sheettext</font><static>Drag &amp; drop this to Quick actions to save</static></stringcontrol>
+      <windowmenubar_utilitybox name="menubar" />
+    </sheetdata>
+  </windowclass>
+  <windowclass name="dwb_reroll_confirm">
+    <frame>utilitybox</frame><placement><size width="450" height="220" /><nosave /></placement>
+    <windowmenu><simple /></windowmenu>
+      <script>local panel; local index; function setData(w,i,count) panel=w; index=i; paper.setStaticBounds(18,45,414,153); message.setValue("Reroll this die? Rerolls this turn: " .. count .. ". You must use the new result. Undo still returns to dice setup."); end
+      function confirm() if panel then panel.confirmReroll(index); end close(); end</script>
+    <sheetdata>
+      <genericcontrol name="paper"><bounds>18,24,-36,-52</bounds><frame name="groupbox" offset="0,0,0,0" /><disabled /></genericcontrol>
+      <stringcontrol name="message"><bounds>44,66,362,65</bounds><font>sheettext</font><static /></stringcontrol>
+      <button_text name="yes"><bounds>80,160,130,24</bounds><text>Reroll</text><script>function onButtonPress() window.confirm(); end</script></button_text>
+      <button_text name="no"><bounds>240,160,130,24</bounds><text>Cancel</text><script>function onButtonPress() window.close(); end</script></button_text>
+      <windowmenubar_utilitybox name="menubar" />
+    </sheetdata>
+  </windowclass>
+  <windowclass name="dwb_reopen"><script>function onInit() local id=DB.getValue(getDatabaseNode(),"request",""); close(); DWB.reopen(id); end</script></windowclass>
+</root>
