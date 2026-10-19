@@ -90,4 +90,4 @@ tekerleğiyle piksel bazında yana kaydırır.
 Paneldeki 2D zarlar standart ikonlardır; hasar türüne atanmış skin gerçek 3D
 atışta kullanılır.
 
-Kod veya paket GitHub'a gönderilmedi.
+Kaynak kodu: [alperozisik/FG-Damage-Workbench](https://github.com/alperozisik/FG-Damage-Workbench).

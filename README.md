@@ -157,4 +157,4 @@ the 2D editing cells. A horizontal track below the cards supports continuous pix
 moving the thumb, clicking the track or using the wheel. It moves the existing
 cards inside a clipped viewport; no pagination arrows are used.
 
-No source-code license has been selected for public distribution yet.
+Source code and original UI assets are distributed under the MIT License.
