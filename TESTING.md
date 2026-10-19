@@ -11,6 +11,9 @@ usage guides identify v0.3.5; the existing screenshots show the same UI in v0.3.
 CHANGELOG.md starts at this release, with Unreleased reserved for future changes.
 Seventeen automated model/compilation tests passed. The runtime includes a
 transparent 40px chat logo; the guides include its 256px counterpart.
+After a full FG restart, the sandbox chat visibly showed the logo and red
+"Damage Workbench v0.3.5 loaded." announcement. A cropped capture is included
+in both guides. A full restart refreshed cached announcement metadata.
 
 ## Native documentation capture — 0.3.4
 

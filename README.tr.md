@@ -6,6 +6,8 @@ Bu kullanım rehberi **v0.3.5** içindir. [Değişiklik günlüğü](CHANGELOG.m
 
 Yüklenince sohbette **Damage Workbench v0.3.5 loaded.** mesajı görünür.
 
+![Damage Workbench v0.3.5](docs/screenshots/startup-version.png)
+
 Fantasy Grounds Unity 5E'de silah ve cantrip hasarını incele, zarları düzenle,
 gizli atış yap ve hazır olduğunda sonucu uygula.
 
