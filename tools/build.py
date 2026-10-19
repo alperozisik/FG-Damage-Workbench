@@ -38,7 +38,8 @@ def source_archive():
     files = [ROOT / name for name in ("extension.xml", "strings.xml", "README.md",
              "README.tr.md", "TESTING.md", "requirements-dev.txt", ".gitignore", "LICENSE")]
     for folder, pattern in (("scripts", "*.lua"), ("ui", "*"), ("tools", "*.py"),
-                            ("tests", "*.py"), ("tests", "*.lua")):
+                            ("tests", "*.py"), ("tests", "*.lua"),
+                            ("docs/screenshots", "*.png")):
         files += sorted((ROOT / folder).glob(pattern))
     target = ROOT / "dist" / "DamageWorkbench-Source.zip"
     target.parent.mkdir(exist_ok=True)
