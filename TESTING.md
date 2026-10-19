@@ -3,6 +3,13 @@
 This record covers version 0.3.5 and retains earlier verification history. The tables distinguish executed tests from
 items that still require acceptance testing. Tests use a separate local sandbox.
 
+## Documentation image cleanup
+
+The Critical type-editing screenshot was retouched with image_gen to remove
+the mouse pointer and blue automation halo. Visually checked that its labels,
+dice, controls and overall layout remain represented. FG was not opened and
+no runtime code changed.
+
 ## 0.3.5 load version and release documentation
 
 Added a native FG extension announcement. The build rejects an announcement/

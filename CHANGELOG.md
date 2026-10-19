@@ -5,6 +5,10 @@ This log starts with v0.3.5; earlier releases remain in GitHub Releases.
 
 ## [Unreleased]
 
+### Documentation
+
+- Remove the mouse pointer and blue automation halo from the Critical damage-type screenshot.
+
 ## [0.3.5] - 2026-10-19
 
 ### Added
