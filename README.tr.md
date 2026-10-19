@@ -1,5 +1,11 @@
 # Damage Workbench
 
+<img src="docs/assets/damage-workbench-logo.png" alt="Damage Workbench" width="128" />
+
+Bu kullanım rehberi **v0.3.5** içindir. [Değişiklik günlüğü](CHANGELOG.md).
+
+Yüklenince sohbette **Damage Workbench v0.3.5 loaded.** mesajı görünür.
+
 Fantasy Grounds Unity 5E'de silah ve cantrip hasarını incele, zarları düzenle,
 gizli atış yap ve hazır olduğunda sonucu uygula.
 

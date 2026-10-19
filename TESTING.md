@@ -1,7 +1,16 @@
 # Verification record — 2026-10-19
 
-This is a local 0.3.4 implementation. The tables distinguish executed tests from
+This record covers version 0.3.5 and retains earlier verification history. The tables distinguish executed tests from
 items that still require acceptance testing. Tests use a separate local sandbox.
+
+## 0.3.5 load version and release documentation
+
+Added a native FG extension announcement. The build rejects an announcement/
+extension metadata version mismatch. English and Turkish
+usage guides identify v0.3.5; the existing screenshots show the same UI in v0.3.4.
+CHANGELOG.md starts at this release, with Unreleased reserved for future changes.
+Seventeen automated model/compilation tests passed. The runtime includes a
+transparent 40px chat logo; the guides include its 256px counterpart.
 
 ## Native documentation capture — 0.3.4
 

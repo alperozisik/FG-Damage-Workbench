@@ -7,7 +7,12 @@ import xml.etree.ElementTree as ET
 ROOT = Path(__file__).resolve().parents[1]
 
 def build(test_harness=False):
+    version = ET.parse(ROOT / "extension.xml").findtext("properties/version")
+    announcement = ET.parse(ROOT / "extension.xml").find("announcement")
+    if announcement is None or announcement.get("text") != f"Damage Workbench v{version} loaded.":
+        raise ValueError("Load announcement must match extension.xml version")
     files = [ROOT / "extension.xml", ROOT / "strings.xml", ROOT / "LICENSE"]
+    files += sorted((ROOT / "graphics").glob("*.png"))
     files += sorted((ROOT / "scripts").glob("*.lua"))
     files += sorted((ROOT / "ui").glob("*"))
     for path in files:
@@ -36,10 +41,11 @@ def build(test_harness=False):
 def source_archive():
     """Explicit allow-list: never archive campaign data or extracted references."""
     files = [ROOT / name for name in ("extension.xml", "strings.xml", "README.md",
-             "README.tr.md", "TESTING.md", "requirements-dev.txt", ".gitignore", "LICENSE")]
+             "README.tr.md", "CHANGELOG.md", "AGENTS.md", "TESTING.md", "requirements-dev.txt", ".gitignore", "LICENSE")]
     for folder, pattern in (("scripts", "*.lua"), ("ui", "*"), ("tools", "*.py"),
                             ("tests", "*.py"), ("tests", "*.lua"),
-                            ("docs/screenshots", "*.png")):
+                            ("docs/screenshots", "*.png"), ("docs/assets", "*.png"), ("docs/assets", "*.txt"),
+                            ("graphics", "*.png")):
         files += sorted((ROOT / folder).glob(pattern))
     target = ROOT / "dist" / "DamageWorkbench-Source.zip"
     target.parent.mkdir(exist_ok=True)

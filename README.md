@@ -1,5 +1,11 @@
 # Damage Workbench
 
+<img src="docs/assets/damage-workbench-logo.png" alt="Damage Workbench" width="128" />
+
+This usage guide covers **v0.3.5**. [Changelog](CHANGELOG.md).
+
+On load, chat shows **Damage Workbench v0.3.5 loaded.**
+
 Review weapon and cantrip damage in Fantasy Grounds Unity 5E, adjust the dice,
 roll privately, and apply the result when you are ready.
 
