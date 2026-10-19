@@ -1,97 +1,137 @@
 # Damage Workbench
 
-Herhangi bir 5E kampanyasında kullanılmak üzere hazırlanmış yerel extension.
-Kaynak kodu senaryoya veya karakter adlarına bağlı değildir.
-Lisans: [MIT](LICENSE).
+Fantasy Grounds Unity 5E'de silah ve cantrip hasarını incele, zarları düzenle,
+gizli atış yap ve hazır olduğunda sonucu uygula.
 
-0.3.4: Sonuç ekranında üst DTZ, Undo ve sonuç kutusu arasındaki boşluklar küçültüldü; alt açıklama ve Apply/Save yaklaştırıldı. Üst ve alt kutular ayrı kalır.
+[English guide](README.md) · [MIT Lisansı](LICENSE)
 
-Confirm Hit penceresi bekleyen satırlara göre küçülür. Tema kilidi sağ üst araç çubuğundadır ve kilitli başlar. Critical ile saldırı adı aynı satırdadır; DTZ'ler hemen altına alınmıştır. DTZ ve zarların üzerindeyken dikey mouse wheel yatay kaydırır. Sabit değerde Ctrl+wheel sayıyı değiştirir; açık tür listesi kendi içinde kayar. Yatay çubuğu sürüklemek sabit ray üzerinden işlenir.
+## Hasar panelini aç
 
-Cantrip'in Damage aksiyonunu doğrudan hedefe bırakmak veya seçili hedefe çalıştırmak da DWB isteği açar. Bırakılan hedef önceden seçili olmak zorunda değildir. Seçilen hasar satırı korunur; aynı satır/hedef için bekleyen istek yeniden kullanılır. Hedefsiz çift tıklama klasik akışta kalır.
+1. Bir hedef seçip silah veya cantrip saldırısı yap ya da hasar veren cantrip'e
+   karşı hedefe kurtarma atışı yaptır.
+2. İsabet veya başarısız kurtarma bir hasar isteği oluşturur. **Ask GM** modunda
+   GM son değiştiricileri çözüp **Confirm HIT** düğmesine basar. **Cancel** isteği
+   kapatır. **Automatic** modunda panel bu onay beklenmeden açılır.
+3. Hasarı düzenle, **Roll** ile at, sonuçları incele ve **Apply Damage** ile uygula.
 
-Kullanıcıya özel aç/kapat ayarı, DMG effect sürükleme, native koşul/ifade değerlendirmesi ve yatay kaydırma bulunur. Otomatik sınıf hasarı önerileri kaldırıldı. Sağ tık menüsündeki Delete dice kullanılabilir. DTZ ve zar hücreleri daraltıldı; bitişik seçilen zarların vurgusu birleşir.
-Zarlar tür boyutuna göre küçükten büyüğe, sonuçlar aynı sırada gösterilir.
-Critical ve Non-critical ayrı alan başlıklarıdır; her alanın küçük bir + düğmesi
-vardır. Atıştan sonra üst zar kutusu uzamaz; sonuçlar aynı sütunda ayrı kutudadır.
-Tür dropdown'u en çok sekiz satır açılır ve kendi içinde kayar. Magical düğmesi
-zar listesini yeniden oluşturmaz. Tür seçimi dropdown kontrolünü yok etmez.
-Save atıştan sonra da görünür; Undo, reroll sonrasında da zar düzenlemeye döner.
+GM, **Options → Damage Workbench → Confirm hits before damage adjustment**
+ayarından **Ask GM** veya **Automatic** seçer.
 
-Apply, panelde kabul edilen zarları tekrar post-roll dönüşümüne sokmadan native
-sonuç/hasar uygulama akışına geçirir. Görünen toplam ham hasardır; hedefin
-resist/immune gibi savunmaları native akışta ayrıca uygulanır.
+Cantrip'in **Damage** aksiyonunu doğrudan da kullanabilirsin: hedef seçiliyken
+çalıştır veya bir yaratığın üzerine sürükleyip bırak. Üzerine bıraktığın hedefin
+önceden seçili olması gerekmez. Seçtiğin hasar aksiyonu korunur; aynı aksiyon ve
+hedef için bekleyen bir istek varsa yeniden açılır. Seçili hedef veya bırakılan
+hedef olmadan çalıştırılan hasar aksiyonu klasik FG akışında devam eder.
 
-## Kullanıcıya özel aç/kapat
+Kurtarma isteyen cantrip'lerde başarılı kurtarma normalde DWB isteği oluşturmaz.
+Damage'ı doğrudan kullanmak ayrı bir işlemdir; yeni saldırı veya kurtarma atışı yapmaz.
 
-**Options → Damage Workbench → Use Damage Workbench (this user)** altında
-On/Off seç. Oyun ortasında da değiştirilebilir; değişiklik anında GM'ye iletilir
-ve sonraki saldırıda kullanılır. `/dwb on` ve `/dwb off` aynı ayarı değiştirir.
-Tercih o kullanıcının cihazında, kampanyanın yerel FG ayarlarında saklanır.
-GM'nin veya başka oyuncuların seçimini değiştirmez. Varsayılan On'dur.
+## DWB kullanıp kullanmayacağını seç
 
-Off klasik FG akışını sürdürür; yeni DWB paneli açmaz. Henüz onaylanmamış
-istekler kaldırılır. Açık/hazırlanmış bir atış kaybolmaz; tamamlanabilir veya
-sohbetten yeniden açılabilir. Sahipsiz veya sahibi çevrimdışı karakterlerde
-GM'nin kendi tercihi kullanılır.
+Her kullanıcı **Options → Damage Workbench → Use Damage Workbench (this user)**
+ayarını oyun sırasında da değiştirebilir. Varsayılan **On**'dur. Tercih o
+kullanıcının bilgisayarında, kampanya için kaydedilir ve anında GM'ye iletilir.
+Sonraki işlemlerde yeni tercih kullanılır.
 
-## Kullanım
+**Off**, klasik FG akışını kullanır ve henüz onaylanmamış DWB isteklerini kaldırır.
+Hazırlanmış veya atılmış bir hasar paneli tamamlanabilir ya da yeniden açılabilir.
+Karakterin sahibi çevrimiçiyse onun tercihi; karakter sahipsizse veya sahibi
+çevrimdışıysa GM'nin tercihi kullanılır.
 
-1. [Releases](https://github.com/alperozisik/FG-Damage-Workbench/releases/latest) sayfasından `DamageWorkbench.ext` indirip FG veri klasöründeki `extensions` altına koy. Kaynaktan derlemek için `python tools/build.py` kullanılabilir.
-2. Önce ayrı bir test kampanyasında **Damage Workbench** seçeneğini aç.
-3. Options → Damage Workbench altında **Ask GM** veya **Automatic** seç.
-4. Weapon hit veya başarısız cantrip save sonrasında gerekiyorsa GM vuruşu onaylar.
-5. Oyuncu panelde hasarı düzenler, Roll ile atar, gerekirse tek zara çift tıklayıp
-   reroll yapar ve Apply ile uygular. Resist/immune hesabını native 5E akışı yapar.
+## Hasar türlerini ve zarları düzenle
 
-Kilit düğmesi hasar türlerini düzenlemeye açar. Zarları tıklayarak seçebilir,
-Ctrl + sol tık ile doğrudan silebilir ve türler arasında sürükleyebilirsin. Sabit değerler
-yazılabilir; Ctrl + tekerlek ile değiştirilebilir. Critical sabit sayıları
-çoğaltmaz. Reroll eski zar sonucunu yeni sonuçla değiştirir. Undo tüm atışı bırakıp
-zarları yeniden belirlemeye döner; tur içindeki reroll sayacı korunur.
+Her hasar türünün ayrı bir kutusu (DTZ) vardır. Saldırı adı **Critical** düğmesinin
+yanındadır. Sağ üstteki kilit başlangıçta kilitlidir. Kilide tıklamak **hasar
+türleri listesini** düzenlemeye açar; liste kilitliyken de zar ekleyip düzenleyebilirsin.
 
-Zara sağ tıklayıp Delete dice seçerek zarı veya ait olduğu seçimi silebilirsin.
-Ek onay sorulmaz. Ctrl + sol tık kısayolu da kullanılabilir.
+| İşlem | Nasıl yapılır? |
+| --- | --- |
+| Hasar türü ekle | Kilidi aç, **+** düğmesine bas ve açılır listeden tür seç. |
+| Türü değiştir | Kilidi aç ve tür listesini kullan. Aynı bölümde bir tür tekrarlanamaz. |
+| Hasar türünü kaldır | Kilidi aç ve kutunun kırmızı çöp kutusu düğmesine iki kez bas. |
+| Zar ekle | Masaüstündeki zarları istediğin tür kutusuna sürükle. |
+| Hasar aksiyonu ekle | Aksiyonu henüz atılmamış panelin herhangi bir yerine bırak. |
+| Zar seç | Bir tür kutusundaki zarlara tıkla. Tekrar tıklamak seçimi kaldırır. |
+| Zar taşı | Seçili zarları başka bir tür kutusuna sürükle. |
+| Zar sil | Zara sağ tıklayıp **Delete dice** seç. Seçili grup birlikte silinir. |
+| Kısayolla sil | **Ctrl + sol tık** ile zarı veya ait olduğu seçili grubu sil. |
+| Sabit bonusu değiştir | Sayıyı yaz veya üzerinde **Ctrl + mouse wheel** kullan. |
+| Yatay kaydır | Tür kutuları veya zarların üzerindeyken dikey mouse wheel kullan; alt çubuğu sürükleyebilir veya çubuğa tıklayabilirsin. |
 
-Apply yapmadan her kapatışta yalnızca kapatan kullanıcının sohbetine yeniden
-açma bağlantısı ve `/dwb` açıklaması gelir. Kapatmak hasar uygulamaz; düzenleme
-sırasındaki yerel değişiklikler yeniden açılırken korunur.
-Bekleyen hasarlar DB'ye yazılmaz; reload/yeniden açılışta sıfırlanır.
+Açık hasar türü listesi kendi içinde kayar. Zarlar küçük türden büyüğe sıralanır;
+sonuçlar da aynı sırayı korur.
 
-Save hem düzenleme hem sonuç ekranındadır; sonuçları değil yerleşimi kaydeder.
-Açılan pencerede bir ad yazıp referansı Quick Actions'a sürükle.
-Kaydı açık hasar paneline bırakmak veya Quick Actions'tan çalıştırmak mevcut
-yerleşimi tamamen değiştirir. Kapalı panel varken kayıt hasar uygulamaz.
+**Critical**, Critical ve Non-critical hasarı ayırır. Critical bölümündeki uygun
+zarlar ikiye katlanır; sabit bonuslar katlanmaz. Katlanmaması gereken zarları
+**Non-critical** bölümüne koy. Critical'ı kapatmak bölümleri birleştirir;
+yeniden açmak mevcut zarları kritik hasara uygun olarak sınıflandırır.
 
-`/dwb demo` hedefe hasar uygulamayan bir gösterim açar.
+**Magical** ilk aksiyondan gelir ve atıştan önce değiştirilebilir. Sonradan
+yaptığın drop'lar bu düğmeyi otomatik değiştirmez. Atmadan önce her kutu için
+bir hasar türü seç.
 
-## Kod ve test
+## Smite, Sneak Attack ve diğer hasar effect'lerini ekle
 
-`python tools/build.py` kurulabilir paketi üretir. Geliştirme testleri için
-`requirements-dev.txt` içindeki Lua çalışma zamanı gerekir. Test kuklası ve
-kampanya kopyaları yayın paketine dahil edilmez.
+Karakterin Actions sayfasındaki effect aksiyonunu veya bir effect kaydını,
+atıştan önce hedefli hasar paneline bırak. DWB, eşleşen **DMG** bileşenlerini
+hasar türleriyle birlikte ekler. Bu bonusları kendin eklersin; DWB otomatik
+sınıf özelliği önerileri sunmaz.
 
-`python tools/build.py --source` temiz kaynak arşivini de üretir. Yalnızca
-`dist/DamageWorkbench-Source.zip` arşivi kod paylaşımı için hazırlanmıştır;
-yerel `.reference` ve `.private` klasörlerini paylaşma.
+| Effect metni | Eklenen hasar |
+| --- | --- |
+| `Sneak Attack; DMG: 2d6 weapon;` | Silahın hasar türüyle 2d6. |
+| `€ Improved Divine Smite; DMG: 1d8 radiant, melee` | Eşleşen yakın dövüş aksiyonunda 1d8 radiant. |
+| `$ Divine Smite (lvl 1); DMG: 2d8 radiant, melee; IFT: TYPE(undead, fiend); DMG: 1d8 radiant, melee` | Eşleşen yakın dövüş aksiyonunda humanoid'e 2d8, fiend/undead'e 3d8 radiant. |
+| `Branding Smite (Caster); (C); DMG: {_[UPCAST]+2_}d6 radiant` | UPCAST=2 için 4d6 radiant. Upcast değerinin çözülebilmesi için caster'ın gerçek effect aksiyonunu sürükle. |
 
-Ek hasar için effect aksiyonunu panele sürükle. DMG türleri, IF/IFT ve diğer
-kurulu koşullar native effect sisteminde saldırgan/hedef ve melee/ranged
-bağlamıyla değerlendirilir. `weapon` silahın türünü miras alır. Divine Smite
-örneği humanoid için 2d8, fiend/undead için 3d8 radiant ekler. UPCAST=2 iken
-`{_[UPCAST]+2_}d6 radiant` 4d6 olur. Upcast için caster'ın gerçek effect
-aksiyonunu sürükle; bağlam çözülemiyorsa tahmin yapılmaz.
+**IF/IFT**, **ELSE**, hedef türü ve melee/ranged gibi koşullar, kurulu effect
+sistemiyle mevcut saldırgan ve hedef için değerlendirilir. Upcast ifadesi
+çözülemiyorsa drop reddedilir. Koşullar drop anında kontrol edilir; ilgili durum
+değişirse eklenen hasarı kaldırıp effect'i yeniden bırak.
 
-Otomatik Smite/Sneak Attack önerisi veya sınıf özelliğinden eklenen hasar yoktur.
-Eklenen zarlar normal şekilde silinebilir. Drop gerçek CT effect'i eklemez,
-spell slot harcamaz veya concentration başlatmaz; bunları karakterin normal
-spell/effect akışında yönetirsin. Koşullar drop anındaki hedefe göre hesaplanır.
-DTZ'lerin altındaki çubuk, tutamacı sürükleyerek, çubuğa tıklayarak veya fare
-tekerleğiyle piksel bazında yana kaydırır.
+Eklenen zarlar düzenlenebilir ve silinebilir. Effect bırakmak onu combat tracker'a
+eklemez, spell slot harcamaz veya concentration başlatmaz. Bunları karakterin
+normal spell/effect kontrollerinden yönet.
 
-17 model/derleme testi mevcut. Native kontroller ve kapsam sınırları
-[test kaydında](TESTING.md) yer alır. Ayrı oyuncu istemcisi henüz doğrulanmadı.
-Paneldeki 2D zarlar standart ikonlardır; hasar türüne atanmış skin gerçek 3D
-atışta kullanılır.
+## Roll, reroll, Undo ve Apply
 
-Kaynak kodu: [alperozisik/FG-Damage-Workbench](https://github.com/alperozisik/FG-Damage-Workbench).
+**Roll**, zarları gizli atar. Sonuçlar, ilk zar kutularının altında ayrı kutularda
+görünür; henüz hasar uygulanmaz.
+
+Bir sonuç zarına çift tıklayıp onaylayarak **reroll** yap. Yeni sonucu kullanman
+gerekir; o zarın eski sonucuna dönemezsin. Onay penceresi, karakterin mevcut
+combat turundaki reroll sayısını gösterir.
+
+**Undo**, reroll sonrasında da tüm atışı bırakıp zar düzenlemeye döner. Yanlış
+zarları seçtiysen hasarı yeniden hazırlamak için kullan. Turun reroll sayacı korunur.
+
+**Apply Damage**, kabul ettiğin sonuçları sohbete gönderir ve hedefe hasarı uygular.
+Panel ham hasarı gösterir; resistance, immunity ve diğer hedef savunmaları alınan
+gerçek hasarı azaltabilir. Apply sonrasında bekleyen DWB isteği sona erer.
+
+## Paneli kapat ve yeniden aç
+
+**X** ile kapatmak hasar uygulamaz. Apply öncesindeki her kapatışta **yalnızca
+senin sohbetine** bir hatırlatma ve yeniden açma bağlantısı gelir. Bağlantıya
+tıkla veya `/dwb` kullanarak bekleyen hasarı aç. Atış öncesi düzenlemelerin korunur.
+
+Bekleyen paneller ve atış sonuçları mevcut oturum boyunca tutulur. Reload veya
+yeniden başlatma bunları temizler; önce bekleyen hasarı tamamla.
+
+## Hasar yerleşimini kaydet
+
+**Save**, atıştan önce ve sonra kullanılabilir. Bir ad girip adlandırılmış
+tutamacı **Quick Actions** alanına sürükle. Atış sonuçları değil, yerleşim kaydedilir.
+
+Kaydı henüz atılmamış bir panele bırak veya böyle bir panel açıkken Quick Action'ı
+çalıştır. Mevcut yerleşimin tamamı değiştirilir. Panel kapalıyken kaydı çalıştırmak
+yalnızca kullanım mesajı gösterir.
+
+## Sohbet komutları
+
+| Komut | İşlev |
+| --- | --- |
+| `/dwb` | Bekleyen hasarı yeniden aç. |
+| `/dwb on` | Bu kullanıcı için DWB'yi aç. |
+| `/dwb off` | Bu kullanıcı için klasik FG akışına geç. |
+| `/dwb demo` | Hedefsiz örnek panel aç. Roll ve Undo denenebilir; Apply devre dışıdır. |
