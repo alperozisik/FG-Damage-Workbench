@@ -3,6 +3,8 @@ local result = false;
 local fixedValue = false;
 local updating = false;
 
+function onWheel(notches) if panel then return panel.onWheel(notches); end end
+
 function onDrop(x, y, draginfo)
   if not panel or not zone then return false; end
   panel.cancelDelete(); return DWB.drop(panel, draginfo, zone.id);

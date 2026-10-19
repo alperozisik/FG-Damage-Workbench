@@ -4,7 +4,11 @@ Herhangi bir 5E kampanyasında kullanılmak üzere hazırlanmış yerel extensio
 Kaynak kodu senaryoya veya karakter adlarına bağlı değildir.
 Lisans: [MIT](LICENSE).
 
-0.3.2: Cantrip'in Damage aksiyonunu doğrudan hedefe bırakmak veya seçili hedefe çalıştırmak da DWB isteği açar. Bırakılan hedef önceden seçili olmak zorunda değildir. Seçilen hasar satırı korunur; aynı satır/hedef için bekleyen istek yeniden kullanılır. Hedefsiz çift tıklama klasik akışta kalır.
+0.3.4: Sonuç ekranında üst DTZ, Undo ve sonuç kutusu arasındaki boşluklar küçültüldü; alt açıklama ve Apply/Save yaklaştırıldı. Üst ve alt kutular ayrı kalır.
+
+Confirm Hit penceresi bekleyen satırlara göre küçülür. Tema kilidi sağ üst araç çubuğundadır ve kilitli başlar. Critical ile saldırı adı aynı satırdadır; DTZ'ler hemen altına alınmıştır. DTZ ve zarların üzerindeyken dikey mouse wheel yatay kaydırır. Sabit değerde Ctrl+wheel sayıyı değiştirir; açık tür listesi kendi içinde kayar. Yatay çubuğu sürüklemek sabit ray üzerinden işlenir.
+
+Cantrip'in Damage aksiyonunu doğrudan hedefe bırakmak veya seçili hedefe çalıştırmak da DWB isteği açar. Bırakılan hedef önceden seçili olmak zorunda değildir. Seçilen hasar satırı korunur; aynı satır/hedef için bekleyen istek yeniden kullanılır. Hedefsiz çift tıklama klasik akışta kalır.
 
 Kullanıcıya özel aç/kapat ayarı, DMG effect sürükleme, native koşul/ifade değerlendirmesi ve yatay kaydırma bulunur. Otomatik sınıf hasarı önerileri kaldırıldı. Sağ tık menüsündeki Delete dice kullanılabilir. DTZ ve zar hücreleri daraltıldı; bitişik seçilen zarların vurgusu birleşir.
 Zarlar tür boyutuna göre küçükten büyüğe, sonuçlar aynı sırada gösterilir.
@@ -33,7 +37,7 @@ GM'nin kendi tercihi kullanılır.
 
 ## Kullanım
 
-1. `dist/DamageWorkbench.ext` dosyasını FG veri klasöründeki `extensions` altına koy.
+1. [Releases](https://github.com/alperozisik/FG-Damage-Workbench/releases/latest) sayfasından `DamageWorkbench.ext` indirip FG veri klasöründeki `extensions` altına koy. Kaynaktan derlemek için `python tools/build.py` kullanılabilir.
 2. Önce ayrı bir test kampanyasında **Damage Workbench** seçeneğini aç.
 3. Options → Damage Workbench altında **Ask GM** veya **Automatic** seç.
 4. Weapon hit veya başarısız cantrip save sonrasında gerekiyorsa GM vuruşu onaylar.
@@ -85,7 +89,7 @@ spell/effect akışında yönetirsin. Koşullar drop anındaki hedefe göre hesa
 DTZ'lerin altındaki çubuk, tutamacı sürükleyerek, çubuğa tıklayarak veya fare
 tekerleğiyle piksel bazında yana kaydırır.
 
-16 model/derleme testi mevcut. Native kontroller ve kapsam sınırları
+17 model/derleme testi mevcut. Native kontroller ve kapsam sınırları
 [test kaydında](TESTING.md) yer alır. Ayrı oyuncu istemcisi henüz doğrulanmadı.
 Paneldeki 2D zarlar standart ikonlardır; hasar türüne atanmış skin gerçek 3D
 atışta kullanılır.

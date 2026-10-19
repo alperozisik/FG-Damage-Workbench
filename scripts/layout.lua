@@ -5,6 +5,19 @@ RESULT_HEIGHT = 254;
 GAP = 10;
 GROUP_GAP = 20;
 
+function vertical(p)
+  local cardTop=p and p.critical and 32 or 8;
+  if not p or p.phase~="results" then
+    return {height=520,viewport=264,track=372,cardTop=cardTop};
+  end
+  local undo=104+cardTop+ZONE_HEIGHT+12;
+  local resultHeading=undo+24+12-104;
+  local resultTop=resultHeading+(p.critical and 30 or 0);
+  local bottom=104+resultTop+RESULT_HEIGHT;
+  return {height=bottom+124,viewport=bottom-104,track=bottom+8,
+    cardTop=cardTop,undo=undo,resultHeading=resultHeading,resultTop=resultTop};
+end
+
 function groups(p, available, editing)
   local groups = p.critical and { {side="critical", label="Critical", zones={}}, {side="normal", label="Non-critical", zones={}} }
     or { {side="normal", label="", zones={}} };

@@ -1,7 +1,30 @@
 # Verification record — 2026-10-19
 
-This is a local 0.3.2 implementation. The tables distinguish executed tests from
+This is a local 0.3.4 implementation. The tables distinguish executed tests from
 items that still require acceptance testing. Tests use a separate local sandbox.
+
+## 0.3.4 compact results spacing
+
+The upper card ends 12 pixels before Undo; a further 12 pixels separates Undo
+from the results or critical section heading. The separate result cards retain
+their existing size. The results height is 760 pixels without critical headings,
+814 with them, instead of 874. Status and Apply/Save move up with the window.
+Native visual acceptance remains pending; the existing Windows input issue
+is recorded under 0.3.3 below.
+
+## 0.3.3 compact layout and wheel panning
+
+Seventeen model/compilation tests passed. The new scrollbar regression checks
+linear drag movement, no drift with a stationary pointer, both travel limits
+and forwarding wheel input to the panel. The native toolbar toggle supplies
+theme frames/icons and starts locked; it edits only the damage-type list.
+Confirm Hit uses 230 pixels for one row and grows with additional requests.
+The edit panel is 520 pixels high, with Critical and context sharing a row.
+Native pointer acceptance remains unverified: FG launched, but the control tool
+returned `foreground window did not report a process id` on the My Campaigns
+click. No campaign was opened or changed during this attempt. The native theme
+appearance, wheel routing over live controls and track/disabled-thumb hit testing
+still require in-app acceptance.
 
 ## 0.3.2 direct cantrip targeting
 

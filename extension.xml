@@ -2,7 +2,7 @@
 <root version="5.1" release="1">
   <properties>
     <name>Damage Workbench</name>
-    <version>0.3.2</version>
+    <version>0.3.4</version>
     <author>Alper</author>
     <description>Review, roll, reroll and apply weapon and cantrip damage for any 5E campaign.</description>
     <ruleset><name>5E</name></ruleset>

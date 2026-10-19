@@ -7,6 +7,15 @@ local previewing = false;
 local rolling = {};
 
 function onInit()
+  ToolbarManager.registerButton("dwb_edit", {
+    sType="toggle", nDefault=1,
+    {icon="button_toolbar_locked_false",tooltipres="button_toolbar_locked_false"},
+    {icon="button_toolbar_locked_true",tooltipres="button_toolbar_locked_true"},
+    fnOnValueChange=function(c)
+      local w=WindowManager.getTopWindow(c.window);
+      if w and w.setEditing then w.setEditing(c.getValue()==0); end
+    end,
+  });
   if Session.IsHost and DB.findNode("damageworkbenchlinks") then DB.deleteNode("damageworkbenchlinks"); end
   registerRollTransport();
   OptionsManager.registerOptionData({ sKey = "DWB_CONFIRM", sGroupRes = "dwb_options",

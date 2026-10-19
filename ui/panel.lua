@@ -21,11 +21,12 @@ function isEditing() return editing; end
 function setBusy(value) busy = value; refresh(); end
 
 function setPlan(p)
+  if not plan or plan.id~=p.id then editing=false; end
   plan = p; busy = p.phase == "rolling" or p.phase == "rerolling";
   clearSelection();
   if previousPhase ~= p.phase then
     local width = getSize();
-    setSize(width, p.phase == "results" and 940 or 590);
+    setSize(width, DWBLayout.vertical(p).height);
     previousPhase = p.phase;
   end
   refresh();
@@ -77,8 +78,12 @@ function cancelDelete(except)
 end
 
 function toggleEdit()
+  setEditing(not editing);
+end
+
+function setEditing(value)
   if not plan or plan.phase ~= "edit" or busy then return; end
-  editing = not editing; cancelDelete(); refresh();
+  editing = value==true; cancelDelete(); refresh();
 end
 
 function toggleCritical()
@@ -105,6 +110,10 @@ function scrollZones(delta)
 end
 
 function getScrollOffset() return offset; end
+function getScrollTrackGeometry()
+  local width=getSize();
+  return 44,DWBLayout.vertical(plan).track,width-88;
+end
 function getZoneControl(id) return viewport.subwindow["zone"..id]; end
 function setScrollOffset(value)
   offset=math.max(0,math.min(maxOffset,value));
@@ -114,7 +123,7 @@ function setScrollOffset(value)
 end
 
 function onWheel(notches)
-  scrollZones(-notches*32); return true;
+  scrollZones(-notches*16); return true;
 end
 
 function onDrop(x, y, drag)
@@ -139,13 +148,17 @@ function refresh()
   controls = {}; positions={};
   local width,height=getSize();
   local results=plan.phase=="results";
+  local vertical=DWBLayout.vertical(plan);
   local canEdit=plan.phase=="edit" and not busy;
   paper.setStaticBounds(18,45,width-36,height-67);
-  context.setStaticBounds(44,106,width-88,22);
-  viewport.setStaticBounds(44,170,width-88,results and 640 or 270);
-  hscroll.setStaticBounds(44,results and 814 or 444,width-88,14);
+  critical.setStaticBounds(44,68,122,24);
+  context.setStaticBounds(182,69,width-226,22);
+  viewport.setStaticBounds(44,104,width-88,vertical.viewport);
+  local trackX,trackY,trackWidth=getScrollTrackGeometry();
+  hscroll.setStaticBounds(trackX,trackY,trackWidth,14);
   critical.setValue(plan.critical and 1 or 0); critical.setEnabled(canEdit);
-  edit.setValue(editing and 1 or 0); edit.setEnabled(canEdit);
+  local lock=menubar.subwindow and menubar.subwindow.dwb_edit;
+  if lock then lock.setValueNoEvent(editing and 0 or 1); lock.setEnabled(canEdit); end
   magical.setValue(plan.magical and 1 or 0); magical.setEnabled(canEdit);
   context.setValue((plan.actorName and plan.actorName.." / " or "")..plan.label);
   local groups,limit=DWBLayout.groups(plan,width-88,editing and canEdit);
@@ -165,22 +178,23 @@ function refresh()
     local x=g.x;
     if g.label~="" then
       caption("group_"..g.side,g.label,x+6,10,g.width-12);
-      if results then caption("resultgroup_"..g.side,g.label,x+6,340,g.width-12); end
+      if results then caption("resultgroup_"..g.side,g.label,x+6,vertical.resultHeading,g.width-12); end
     end
     for j,z in ipairs(g.zones) do
       local zx=x+(j-1)*(DWBLayout.ZONE_WIDTH+DWBLayout.GAP);
       local c=area.createControl("dwb_zonehost","zone"..z.id);
-      place(c,zx,40,DWBLayout.ZONE_WIDTH,DWBLayout.ZONE_HEIGHT); c.setValue("dwb_zone","");
+      local cardTop=vertical.cardTop;
+      place(c,zx,cardTop,DWBLayout.ZONE_WIDTH,DWBLayout.ZONE_HEIGHT); c.setValue("dwb_zone","");
       if c.subwindow then c.subwindow.setData(self,plan,z,false); end
       if results then
         local r=area.createControl("dwb_zonehost","result"..z.id);
-        place(r,zx,370,DWBLayout.ZONE_WIDTH,DWBLayout.RESULT_HEIGHT); r.setValue("dwb_zone","");
+        place(r,zx,vertical.resultTop,DWBLayout.ZONE_WIDTH,DWBLayout.RESULT_HEIGHT); r.setValue("dwb_zone","");
         if r.subwindow then r.subwindow.setData(self,plan,z,true); end
       end
     end
     if editing and canEdit then
       local plus=area.createControl("dwb_add","plus_"..g.side);
-      place(plus,x+g.width-26,141,20,20);
+      place(plus,x+g.width-26,(plan.critical and 32 or 8)+101,20,20);
       local side=g.side; plus.configure(function() addZone(side); end);
     end
   end
@@ -189,11 +203,11 @@ function refresh()
   roll.setEnabled(not busy and (results or canEdit and ok));
   local center=math.floor(width/2);
   magical.setStaticBounds(center-70,height-100,140,22); magical.setVisible(not results);
-  roll.setStaticBounds(center-70,results and 466 or height-64,140,24);
-  save.setStaticBounds(center+116,height-(results and 76 or 64),70,24); save.setVisible(canEdit or results); save.setEnabled(not busy);
+  roll.setStaticBounds(center-70,results and vertical.undo or height-64,140,24);
+  save.setStaticBounds(center+116,height-64,70,24); save.setVisible(canEdit or results); save.setEnabled(not busy);
   apply.setVisible(results); apply.setEnabled(results and not busy and plan.id~="demo");
-  apply.setStaticBounds(center-100,height-76,200,24); apply.setText("Apply "..DWBModel.total(plan).." Damage");
-  status.setStaticBounds(44,height-(results and 102 or 126),width-88,22);
+  apply.setStaticBounds(center-100,height-64,200,24); apply.setText("Apply "..DWBModel.total(plan).." Damage");
+  status.setStaticBounds(44,height-(results and 94 or 126),width-88,22);
   status.setValue(busy and "Working..." or results and "Double-click a result die to reroll. Apply commits these accepted values." or (ok and "Drop dice, damage actions or damage effects." or err));
   hscroll.configure(width-88,maxOffset,offset);
   refreshing=false;

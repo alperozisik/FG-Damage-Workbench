@@ -8,6 +8,7 @@ function setData(w,p,z,isResult)
 end
 function getPanel() return panel; end
 function getZone() return zone; end
+function onWheel(notches) if panel then return panel.onWheel(notches); end end
 function refreshTypeChoices()
   if not zone or resultMode then return; end
   local wasRefreshing=refreshing; refreshing=true;

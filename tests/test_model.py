@@ -266,6 +266,28 @@ class ModelTests(unittest.TestCase):
           assert(opened==1);
         ''')
 
+    def test_scroll_drag_keeps_grab_offset_and_wheel_routes_to_panel(self):
+        self.lua.execute('''
+          Scroll={};setmetatable(Scroll,{__index=_G}); current=0; wheel=0;
+          setVisible=function()end;
+          window={scrollhandle={setVisible=function()end,setStaticBounds=function()end},
+            getScrollTrackGeometry=function()return 44,372,200 end,
+            setScrollOffset=function(v)current=v;Scroll.configure(200,600,v)end,
+            onWheel=function(n)wheel=wheel+n;return true end};
+        ''')
+        self.lua.globals().loadModule((ROOT / 'ui/hscroll.lua').read_text(encoding='utf-8'),self.lua.globals().Scroll)
+        self.run_lua('''
+          Scroll.configure(200,600,0);
+          Scroll.onClickDown(1,10,4);
+          Scroll.onDragStart(1,10,4,{});
+          Scroll.onDrag(1,20,4,{}); assert(current==40);
+          Scroll.onDrag(1,30,4,{}); assert(current==80);
+          Scroll.onDrag(1,30,4,{}); assert(current==80,'stationary pointer caused drift');
+          Scroll.onDrag(1,500,4,{}); assert(current==600);
+          Scroll.onDrag(1,-50,4,{}); assert(current==0);
+          Scroll.onDragEnd(); assert(Scroll.onWheel(-2) and wheel==-2);
+        ''')
+
     def test_direct_cantrip_drop_uses_target_and_selected_damage_variant(self):
         self.lua.execute('''
           Session={IsHost=true}; enabled=true; built={}; sent={};

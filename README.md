@@ -9,8 +9,8 @@ packages and never upload them. [Türkçe kullanım](README.tr.md).
 
 ## Install
 
-1. Run `python tools/build.py`.
-2. Copy `dist/DamageWorkbench.ext` into your Fantasy Grounds data `extensions` folder.
+1. Download `DamageWorkbench.ext` from [Releases](https://github.com/alperozisik/FG-Damage-Workbench/releases/latest), or build it with `python tools/build.py`.
+2. Copy `DamageWorkbench.ext` into your Fantasy Grounds data `extensions` folder.
 3. Enable **Damage Workbench** in a separate test campaign first.
 4. Set **Options → Damage Workbench → Confirm hits before damage adjustment** to
    **Ask GM** (default) or **Automatic**.
@@ -34,6 +34,18 @@ Already prepared/rolled damage remains available to finish or reopen, so changin
 the preference does not discard a pending throw. The default is On.
 
 ## Workflow
+
+In 0.3.4, results use compact vertical spacing around Undo and the separate
+result cards. The default results height is 760 pixels (814 with critical
+section headings), with the status and Apply/Save row closer to the results.
+
+In 0.3.3, Confirm Hit fits the pending rows. The damage-type lock uses the
+theme's native title-bar toolbar, starts locked and opens on click. Critical
+and the attack label share the top row, with the damage cards directly below.
+The vertical mouse wheel over the cards, dice or scrollbar pans horizontally
+in small steps. Ctrl+wheel over a fixed modifier still changes that value;
+an open type dropdown retains its own list scrolling. The thumb is decorative,
+so dragging uses the stable track coordinates instead of a moving origin.
 
 A successful PC weapon attack or a failed save against a damaging cantrip creates
 an in-memory request. In Ask GM mode, resolve any late modifiers before confirming

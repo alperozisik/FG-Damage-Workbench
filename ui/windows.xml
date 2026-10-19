@@ -12,28 +12,20 @@
   <template name="dwb_zonehost"><subwindow><activate /><fastinit /></subwindow></template>
   <windowclass name="dwb_panel">
     <frame>utilitybox</frame>
-    <placement><size width="740" height="590" /><nosave /></placement>
-    <sizelimits><minimum width="560" height="590" /><maximum width="1600" height="1100" /><dynamic /></sizelimits>
+    <placement><size width="740" height="520" /><nosave /></placement>
+    <sizelimits><minimum width="560" height="520" /><maximum width="1600" height="1100" /><dynamic /></sizelimits>
     <noclose />
-    <windowmenu><nolink /><norecord /><right>close</right></windowmenu>
+    <windowmenu><nolink /><norecord /><right>close</right><right>dwb_edit</right></windowmenu>
     <script file="ui/panel.lua" />
     <sheetdata>
       <genericcontrol name="paper"><bounds>18,45,-36,-60</bounds><frame name="groupbox" offset="0,0,0,0" /><disabled /></genericcontrol>
       <stringcontrol name="heading"><bounds>22,14,-40,24</bounds><font>windowtitle</font><static>Damage Adjustment</static></stringcontrol>
       <windowmenubar_utilitybox name="menubar" />
-      <buttoncontrol name="edit"><bounds>44,68,24,24</bounds><frame name="windowmenubar_button" offset="2,2,2,2" /><state icon="button_toolbar_locked_true" /><state icon="button_toolbar_locked_false" /><tooltip text="Edit damage type list" /><script>function onInit() setColor(ColorManager.getWindowMenuIconColor()); end function onButtonPress() window.toggleEdit(); end</script></buttoncontrol>
-      <button_text_toggle name="critical"><bounds>96,68,122,24</bounds><text>Critical</text><script>function onButtonPress() window.toggleCritical(); end</script></button_text_toggle>
-      <stringcontrol name="context"><bounds>22,85,-44,22</bounds><font>sheettext</font><static /></stringcontrol>
-      <subwindow name="viewport"><bounds>44,170,-88,270</bounds><class>dwb_viewport</class><activate /><fastinit /></subwindow>
-      <genericcontrol name="hscroll"><bounds>44,444,-88,14</bounds><backcolor>FF263239</backcolor><tooltip text="Scroll damage types horizontally" /><script file="ui/hscroll.lua" /></genericcontrol>
-      <genericcontrol name="scrollhandle"><bounds>44,446,32,10</bounds><backcolor>FFBB9F5D</backcolor><script>
-        function onClickDown(button,x,y) return window.hscroll.onClickDown(button,x+window.hscroll.thumbOffset(),y); end
-        function onClickRelease(button,x,y) return window.hscroll.onClickRelease(button,x+window.hscroll.thumbOffset(),y); end
-        function onDragStart(button,x,y,drag) return window.hscroll.onDragStart(button,x+window.hscroll.thumbOffset(),y,drag); end
-        function onDrag(button,x,y,drag) return window.hscroll.onDrag(button,x+window.hscroll.thumbOffset(),y,drag); end
-        function onDragEnd(drag) window.hscroll.onDragEnd(drag); end
-        function onWheel(notches) return window.hscroll.onWheel(notches); end
-      </script></genericcontrol>
+      <button_text_toggle name="critical"><bounds>44,68,122,24</bounds><text>Critical</text><script>function onButtonPress() window.toggleCritical(); end</script></button_text_toggle>
+      <stringcontrol name="context"><bounds>182,69,-226,22</bounds><font>sheettext</font><static /></stringcontrol>
+      <subwindow name="viewport"><bounds>44,104,-88,264</bounds><class>dwb_viewport</class><activate /><fastinit /></subwindow>
+      <genericcontrol name="hscroll"><bounds>44,372,-88,14</bounds><backcolor>FF263239</backcolor><tooltip text="Mouse wheel or drag to scroll damage types horizontally" /><script file="ui/hscroll.lua" /></genericcontrol>
+      <genericcontrol name="scrollhandle"><bounds>44,374,32,10</bounds><backcolor>FFBB9F5D</backcolor><disabled /></genericcontrol>
       <stringcontrol name="status"><bounds>22,-90,-44,20</bounds><font>sheettext</font><static /></stringcontrol>
       <button_text_toggle name="magical"><bounds>300,-65,140,22</bounds><text>Magical</text><script>function onButtonPress() window.toggleMagical(); end</script></button_text_toggle>
       <button_text name="roll"><bounds>300,-35,140,24</bounds><text>Roll</text><script>function onButtonPress() window.rollOrUndo(); end</script></button_text>
@@ -48,7 +40,7 @@
       local panel;
       function setPanel(w) panel=w; end
       function onDrop(x,y,drag) if panel then return panel.onDrop(x,y,drag); end end
-      function onWheel(notches) if panel then panel.scrollZones(-notches*32); end return true; end
+      function onWheel(notches) if panel then return panel.onWheel(notches); end return true; end
       function onClickDown(button) return true; end
     </script>
     <sheetdata />
@@ -60,12 +52,14 @@
       <stringcontrol name="title"><bounds>16,14,104,20</bounds><font>sheetlabel</font><static /></stringcontrol>
       <comboboxc name="dtype"><bounds>16,14,86,20</bounds><listmaxsize>8</listmaxsize><invisible /><script>
         function onSelect(value) window.changeType(value); end
+        function onWheel(notches) return window.onWheel(notches); end
         function onClickDown(button,x,y) if button==2 then return true; end return super.onClickDown(button,x,y); end
         function onClickRelease(button,x,y) if button==2 then return true; end return super.onClickRelease(button,x,y); end
       </script></comboboxc>
       <button_idelete_base name="remove"><bounds>108,14,20,20</bounds><script>function onButtonPress() window.deleteZone(); end</script></button_idelete_base>
       <windowlist name="dice"><bounds>12,42,96,160</bounds><class>dwb_die</class><columns width="32" fillwidth="true" /><spacing>0</spacing><skipempty /><script>
         function onDrop(x,y,drag) return window.onDrop(x,y,drag); end
+        function onWheel(notches) return window.onWheel(notches); end
         function onClickDown(button) return button==2; end
         function onClickRelease(button) return button==2; end
       </script></windowlist>
@@ -85,19 +79,20 @@
         function onDoubleClick(x,y) return window.doubleClick(); end
         function onDragStart(button,x,y,draginfo) return window.drag(draginfo); end
         function onDrop(x,y,draginfo) return window.onDrop(x,y,draginfo); end
+        function onWheel(notches) return window.onWheel(notches); end
       </script></genericcontrol>
       <basicnumberc name="fixed"><bounds>4,6,24,20</bounds><invisible /><script>
         function onValueChanged() window.fixedChanged(); end
         function onDrop(x,y,draginfo) return window.onDrop(x,y,draginfo); end
         function onClickDown(button,x,y) if button==2 then return true; end if super.onClickDown then return super.onClickDown(button,x,y); end end
         function onClickRelease(button,x,y) if button==2 then return true; end if super.onClickRelease then return super.onClickRelease(button,x,y); end end
-        function onWheel(notches) if Input.isControlPressed() then setValue(getValue()+notches); return true; end end
+        function onWheel(notches) if Input.isControlPressed() then setValue(getValue()+notches); return true; end return window.onWheel(notches); end
       </script></basicnumberc>
     </sheetdata>
   </windowclass>
   <windowclass name="dwb_approvals">
-    <frame>utilitybox</frame><placement><size width="550" height="360" /><nosave /></placement>
-    <sizelimits><minimum width="550" height="300" /><dynamic /></sizelimits>
+    <frame>utilitybox</frame><placement><size width="550" height="230" /><nosave /></placement>
+    <sizelimits><minimum width="550" height="230" /><dynamic /></sizelimits>
     <windowmenu><simple /></windowmenu>
     <script file="ui/approvals.lua" />
     <sheetdata>
@@ -109,7 +104,7 @@
     </sheetdata>
   </windowclass>
   <windowclass name="dwb_approval">
-    <sizelimits><minimum height="100" /></sizelimits>
+    <sizelimits><minimum height="80" /></sizelimits>
     <script>local id; function setData(ctx) id=ctx.id; label.setValue(ctx.publicName .. " / " .. ctx.label); end
       function confirm() DWB.approve(id); end function reject() DWB.reject(id); end</script>
     <sheetdata>
