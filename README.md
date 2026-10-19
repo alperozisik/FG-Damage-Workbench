@@ -5,6 +5,10 @@ roll privately, and apply the result when you are ready.
 
 [Türkçe kullanım](README.tr.md) · [MIT License](LICENSE)
 
+![Damage setup with the type list locked](docs/screenshots/damage-setup.png)
+
+Screenshots show the example panel opened with `/dwb demo`. Appearance follows your active FG theme.
+
 ## Open a damage panel
 
 1. Target a creature and make a weapon or cantrip attack, or have the target
@@ -70,6 +74,10 @@ classifies the current dice as eligible for critical damage.
 Later drops do not change it automatically. Choose a damage type for every box
 before rolling.
 
+![Unlocked Critical and Non-critical damage types](docs/screenshots/damage-types-critical.png)
+
+With the list unlocked, use each section's **+** to add a type and its dropdowns to change types.
+
 ## Add Smite, Sneak Attack and other damage effects
 
 Drop an effect action from the character's Actions sheet, or an effect entry,
@@ -111,6 +119,10 @@ The turn's reroll count is retained.
 The panel shows raw damage; resistance, immunity and other target defenses may
 reduce damage actually taken. The pending DWB request ends after Apply.
 
+![Separate setup and result boxes with Undo and Save](docs/screenshots/damage-results.png)
+
+The setup stays above the results. This is a targetless demo: **Apply** is disabled and no target takes damage.
+
 ## Close and reopen a panel
 
 Closing with **X** does not apply damage. Every close before Apply adds a reminder
@@ -128,6 +140,8 @@ handle into **Quick Actions**. This saves the layout, not rolled results.
 Drop the saved layout into an unrolled panel, or activate its Quick Action while
 an unrolled panel is open, to replace that panel's entire layout. Activating a
 layout without an open panel only displays a usage message.
+
+![Name the damage layout and drag its handle into Quick Actions](docs/screenshots/save-layout.png)
 
 ## Chat commands
 

@@ -5,6 +5,10 @@ gizli atış yap ve hazır olduğunda sonucu uygula.
 
 [English guide](README.md) · [MIT Lisansı](LICENSE)
 
+![Kilitli hasar hazırlama paneli](docs/screenshots/damage-setup.png)
+
+Görüntüler `/dwb demo` ile açılan örnek panelden alınmıştır. Görünüm, aktif FG temasına göre değişir.
+
 ## Hasar panelini aç
 
 1. Bir hedef seçip silah veya cantrip saldırısı yap ya da hasar veren cantrip'e
@@ -70,6 +74,10 @@ yeniden açmak mevcut zarları kritik hasara uygun olarak sınıflandırır.
 yaptığın drop'lar bu düğmeyi otomatik değiştirmez. Atmadan önce her kutu için
 bir hasar türü seç.
 
+![Kilit açıkken Critical ve Non-critical hasar türleri](docs/screenshots/damage-types-critical.png)
+
+Kilit açıkken her bölümün **+** düğmesiyle tür ekleyebilir, açılır listelerden tür değiştirebilirsin.
+
 ## Smite, Sneak Attack ve diğer hasar effect'lerini ekle
 
 Karakterin Actions sayfasındaki effect aksiyonunu veya bir effect kaydını,
@@ -109,6 +117,10 @@ zarları seçtiysen hasarı yeniden hazırlamak için kullan. Turun reroll sayac
 Panel ham hasarı gösterir; resistance, immunity ve diğer hedef savunmaları alınan
 gerçek hasarı azaltabilir. Apply sonrasında bekleyen DWB isteği sona erer.
 
+![Ayrı kutularda kritik ve normal atış sonuçları, Undo ve Save](docs/screenshots/damage-results.png)
+
+Üstte hazırlanan zarlar, altta sonuçlar görünür. Bu örnek hedefsiz demodur: **Apply** kapalıdır ve hiçbir hedef hasar almaz.
+
 ## Paneli kapat ve yeniden aç
 
 **X** ile kapatmak hasar uygulamaz. Apply öncesindeki her kapatışta **yalnızca
@@ -126,6 +138,8 @@ tutamacı **Quick Actions** alanına sürükle. Atış sonuçları değil, yerle
 Kaydı henüz atılmamış bir panele bırak veya böyle bir panel açıkken Quick Action'ı
 çalıştır. Mevcut yerleşimin tamamı değiştirilir. Panel kapalıyken kaydı çalıştırmak
 yalnızca kullanım mesajı gösterir.
+
+![Hasar yerleşimini adlandır ve tutamacı Quick Actions alanına sürükle](docs/screenshots/save-layout.png)
 
 ## Sohbet komutları
 

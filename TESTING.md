@@ -3,14 +3,31 @@
 This is a local 0.3.4 implementation. The tables distinguish executed tests from
 items that still require acceptance testing. Tests use a separate local sandbox.
 
+## Native documentation capture — 0.3.4
+
+On 2026-10-19, the current demo panel was opened in Damage_Workbench_Sandbox.
+Pointer input worked after correcting a stale screenshot-state reference in the
+automation session. The earlier input errors below describe previous attempts.
+
+Observed the initially locked native toolbar, clicked it to unlock the type
+list, and clicked Critical to separate eligible dice from the fixed bonus.
+Clicked Roll and waited for native dice to settle: piercing 1+3=4, radiant
+4+6+6+8=24, and the non-critical fixed bonus 5 produced a total of 33.
+Setup and results occupied separate cards with Undo between them. Save remained
+visible after rolling and opened the layout-name and draggable-handle dialog.
+Cropped captures are embedded in both usage guides under docs/screenshots/.
+
+This targetless demo intentionally disables Apply. It does not verify target
+health changes, separate-player transport, pointer drag/drop or wheel panning.
+
 ## 0.3.4 compact results spacing
 
 The upper card ends 12 pixels before Undo; a further 12 pixels separates Undo
 from the results or critical section heading. The separate result cards retain
 their existing size. The results height is 760 pixels without critical headings,
 814 with them, instead of 874. Status and Apply/Save move up with the window.
-Native visual acceptance remains pending; the existing Windows input issue
-is recorded under 0.3.3 below.
+Native demo visual acceptance is recorded above; the earlier Windows input
+issue is recorded under 0.3.3 below.
 
 ## 0.3.3 compact layout and wheel panning
 
