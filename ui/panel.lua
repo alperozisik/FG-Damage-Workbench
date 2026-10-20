@@ -59,6 +59,17 @@ function removeDice(zone, index)
   DWBModel.removeDice(plan, zone, selectedIndices(zone, index)); clearSelection(); refresh();
 end
 
+function setAutoReroll(zone,index,threshold)
+  if not plan or busy then return; end
+  if DWBModel.setAutoReroll(plan,zone,index,threshold) then cancelDelete(); refresh(); end
+end
+
+function toggleDouble()
+  if not plan or busy or plan.phase~="results" then return; end
+  if plan.id=="demo" then plan.doubleDamage=not plan.doubleDamage; refresh();
+  else busy=true; refresh(); DWB.command(plan.id,"double",{enabled=not plan.doubleDamage}); end
+end
+
 function refreshSelection()
   for _, c in ipairs(controls) do
     if c.subwindow and c.subwindow.refreshSelection then c.subwindow.refreshSelection(); end
@@ -206,7 +217,10 @@ function refresh()
   roll.setStaticBounds(center-70,results and vertical.undo or height-64,140,24);
   save.setStaticBounds(center+116,height-64,70,24); save.setVisible(canEdit or results); save.setEnabled(not busy);
   apply.setVisible(results); apply.setEnabled(results and not busy and plan.id~="demo");
-  apply.setStaticBounds(center-100,height-64,200,24); apply.setText("Apply "..DWBModel.total(plan).." Damage");
+  double.setVisible(results); double.setEnabled(results and not busy);
+  double.setValue(plan.doubleDamage and 1 or 0);
+  double.setStaticBounds(center-154,height-64,44,24);
+  apply.setStaticBounds(center-100,height-64,200,24); apply.setText("Apply "..DWBModel.appliedTotal(plan).." Damage");
   status.setStaticBounds(44,height-(results and 94 or 126),width-88,22);
   status.setValue(busy and "Working..." or results and "Double-click a result die to reroll. Apply commits these accepted values." or (ok and "Drop dice, damage actions or damage effects." or err));
   hscroll.configure(width-88,maxOffset,offset);

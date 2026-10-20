@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root version="5.1" release="1">
-  <announcement text="Damage Workbench v0.3.5 loaded." font="emotefont" icon="dwb_logo" />
+  <announcement text="Damage Workbench v0.3.6 loaded." font="emotefont" icon="dwb_logo" />
   <properties>
     <name>Damage Workbench</name>
-    <version>0.3.5</version>
+    <version>0.3.6</version>
     <author>Alper</author>
     <description>Review, roll, reroll and apply weapon and cantrip damage for any 5E campaign.</description>
     <ruleset><name>5E</name></ruleset>

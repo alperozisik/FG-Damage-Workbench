@@ -20,6 +20,58 @@ class ModelTests(unittest.TestCase):
     def run_lua(self, source):
         self.lua.execute(source)
 
+    def test_decoded_action_retains_per_die_reroll_and_skin(self):
+        self.run_lua('''
+          local M=DWBModel;
+          local r={clauses={{dmgtype='radiant',dice={'d6'},modifier=0}},
+            aDice={{type='d6',mode='r2#1',dicebodycolor='ABCDEF'}}};
+          local p=M.new(); assert(M.importClauses(p,M.rollClauses(r)));
+          local d=p.zones[1].dice[1];assert(d.nReroll==2 and not d.bRerollNoLimit and d.dicebodycolor=='ABCDEF');
+          assert(r.clauses[1].dice[1]=='d6');
+        ''')
+
+    def test_native_discarded_rerolls_preserve_order_and_reject_invalid_chains(self):
+        self.run_lua('''
+          local M=DWBModel;local p=M.new();
+          M.importClauses(p,{{dmgtype='fire',dice={{type='d6',mode='r2#1'},'d8'}}});
+          local dice={{type='d6',result=1,dropped=true},{type='d6',result=2,iconcolor='FF123456'},{type='d8',result=7}};
+          assert(M.recordResults(p,{aDice=dice}));
+          assert(M.total(p)==9 and #p.roll.aDice==2 and #p.roll.aDice[1].rolls==2);
+          assert(p.roll.aDice[1].iconcolor=='FF123456' and p.roll.aDice[2].value==7);
+          assert(not M.resolveDice({{type='d6'}},dice));
+          assert(not M.resolveDice({{type='d6',nReroll=2}},{{type='d6',result=3,dropped=true},{type='d6',result=4}}));
+          assert(not M.resolveDice({{type='d6',nReroll=2}},{{type='d6',result=1,dropped=true},{type='d6',result=2,dropped=true},{type='d6',result=4}}));
+          local repeated=M.resolveDice({{type='d6',nReroll=2,bRerollNoLimit=true}},{{type='d6',result=1,dropped=true},{type='d6',result=2,dropped=true},{type='d6',result=4}});
+          assert(#repeated==1 and repeated[1].result==4 and #repeated[1].rolls==3);
+        ''')
+
+    def test_die_menu_thresholds_and_checked_state(self):
+        self.run_lua('''
+          dieUI={};setmetatable(dieUI,{__index=_G});
+          DWBLayout={selectionSegment=function()return nil end};
+          local calls={};local noop=function()end;
+          dieUI.face={resetMenuItems=function()calls={}end,registerMenuItem=function(...)table.insert(calls,{...})end,
+            setVisible=noop,addBitmapWidget=function()return {setColor=noop}end,addTextWidget=noop,setTooltipText=noop};
+          dieUI.fixed={setVisible=noop};dieUI.highlight={setVisible=noop};
+          local selected;testPanel={getPlan=function()return {phase='edit'}end,cancelDelete=noop,
+            setAutoReroll=function(z,i,n)selected=n end};
+          function checkMenu(sides,threshold)
+            dieUI.setData(testPanel,{id=1},{type='d'..sides,nReroll=threshold},1,false,nil,false);
+            return calls;
+          end
+          function menuSelected()return selected end
+        ''')
+        self.lua.globals().loadModule((ROOT / 'ui/die.lua').read_text(encoding='utf-8'),self.lua.globals().dieUI)
+        self.run_lua('''
+          local calls=checkMenu(6,0);assert(calls[1][3]==7 and calls[2][1]=='No auto reroll' and calls[2][2]=='button_checkon' and calls[2][4]==8);
+          assert(calls[#calls][1]=='Delete dice' and calls[#calls][3]==6);
+          dieUI.menuSelection(7,6);assert(menuSelected()==2);dieUI.menuSelection(7,8);assert(menuSelected()==0);
+          calls=checkMenu(20,19);local values={};
+          for _,c in ipairs(calls) do if c[5] then values[tonumber(c[1])]=true;if c[1]=='19' then assert(c[2]=='button_checkon');dieUI.menuSelection(c[3],c[4],c[5]);assert(menuSelected()==19);end end end
+          for n=1,19 do assert(values[n]);end
+          calls=checkMenu(100,0);assert(#calls==1 and calls[1][1]=='Delete dice');
+        ''')
+
     def test_critical_toggle_merges_then_redistributes(self):
         self.run_lua('''
           local M=DWBModel; local p=M.new('Test');
@@ -327,6 +379,85 @@ class ModelTests(unittest.TestCase):
           Comm={deliverOOBMessage=function(m,u)table.insert(sent,m)end};
           r=rolls(); DWB.onDamageTargeting('pc',{{'dropTarget'}},r);
           assert(#r==0 and sent[1].target=='dropTarget' and sent[1].path==path);
+        ''')
+
+    def load_manager(self):
+        self.run_lua('DWB={}; setmetatable(DWB,{__index=_G});')
+        self.lua.globals().loadModule((ROOT / 'scripts/manager.lua').read_text(encoding='utf-8'),self.lua.globals().DWB)
+
+    def test_auto_reroll_import_menu_model_and_saved_layout(self):
+        self.run_lua('''
+          local M=DWBModel; local p=M.new(); local z=M.zone(p,'fire','normal',true);
+          assert(M.addDice(p,z.id,{{type='d6',mode='r2#1',dicebodycolor='AABBCC'},'d8r1#1'}));
+          assert(z.dice[1].nReroll==2 and not z.dice[1].bRerollNoLimit);
+          assert(z.dice[2].nReroll==1 and z.dice[1].dicebodycolor=='AABBCC');
+          M.setCritical(p,true); local r=M.buildRoll(p);
+          assert(#r.aDice==4 and r.aDice[1].mode=='r2#1' and r.aDice[2].mode=='r2#1');
+          local restored=M.new(); assert(M.replace(restored,M.preset(p,'saved')));
+          assert(restored.zones[1].dice[1].nReroll==2);
+          assert(M.setAutoReroll(restored,z.id,1,0)); assert(not M.buildRoll(restored).aDice[1].mode);
+          assert(not M.setAutoReroll(restored,z.id,1,6));
+          local before=M.countDice(p); assert(not M.appendClauses(p,{{dmgtype='cold',dice={{type='d6',mode='r6#1'}}}}));
+          assert(M.countDice(p)==before);
+          local q=M.new(); local t=M.zone(q,'fire','normal',true);
+          assert(not M.addDice(q,t.id,{{type='d100',mode='r1#1'}}));
+          assert(not M.addDice(q,t.id,{{type='d6',mode='r2#2'}}));
+          assert(M.importClauses(q,{{dmgtype='fire',dice={'d6'},nReroll=2}}));
+          assert(M.buildRoll(q).aDice[1].mode=='r2#1');
+        ''')
+
+    def test_roll_visibility_and_undo_audience(self):
+        self.load_manager()
+        self.run_lua('''
+          local option='on'; local friendly=true; local hidden=false; local gated=0;
+          ActorManager={resolveActor=function(a)return a end,getCTNode=function(a)return a end};
+          CombatManager={isCTHidden=function()return hidden end};
+          OptionsManager={isOption=function(k,v)return option==v end};
+          ActionsManager={getShowResultToPlayer=function(a,b)assert(a=='source' and b=='target'); gated=gated+1;return friendly end};
+          local p=DWBModel.new('Sword');DWBModel.importClauses(p,{{dmgtype='slashing',dice={'d6'},modifier=3}});
+          assert(DWBModel.recordResults(p,{aDice={{type='d6',result=4}}}));
+          local ctx={source='source',target='target',owner='Alice',plan=p,label='Sword',publicName='Fighter'};
+          assert(not DWB.secretRoll(ctx));friendly=false;assert(DWB.secretRoll(ctx));assert(gated==2);
+          friendly=true;hidden=true;assert(DWB.secretRoll(ctx));hidden=false;
+          p.flags={bSecret=true};assert(DWB.secretRoll(ctx));p.flags={};
+          option='off';ctx.owner='';assert(DWB.secretRoll(ctx));ctx.owner='Alice';assert(not DWB.secretRoll(ctx));
+          local messages={};Comm={deliverChatMessage=function(m,u)table.insert(messages,{m=m,u=u})end};
+          DWB.auditUndo(ctx);assert(#messages==2 and messages[1].u=='' and messages[2].u=='Alice');
+          assert(messages[1].m.secret and messages[1].m.text:find('d6=4',1,true) and messages[1].m.text:find('Total: 7',1,true));
+          ctx.owner='';messages={};DWB.auditUndo(ctx);assert(#messages==1 and messages[1].u=='');
+        ''')
+
+    def test_native_roll_transport_keeps_mode_and_skin(self):
+        self.load_manager()
+        self.run_lua('''
+          local M=DWBModel;local p=M.new();M.importClauses(p,{{dmgtype='fire',dice={{type='d6',mode='r2#1',dicebodycolor='ABCDEF'}}}});
+          local r=M.buildRoll(p);r.bSecret=false;
+          Utility={decodeJSON=function()return M.copy(r)end};Interface={findWindow=function()end};
+          ActorManager={resolveActor=function(a)return a end};
+          DiceRollManager={addDamageDice=function(out,types,data)table.insert(out,{type=types[1],diceskin=42})end};
+          local captured;ActionsManager={roll=function(source,target,roll)captured=roll;assert(source=='source')end};
+          DWB.receiveRoll({id='test',nonce='once',source='source',payload='encoded'});
+          assert(captured.bSecret==false and captured.aDice[1].mode=='r2#1');
+          assert(captured.aDice[1].dicebodycolor=='ABCDEF' and captured.aDice[1].diceskin==42);
+        ''')
+
+    def test_x2_apply_uses_native_multiplier_without_changing_dice(self):
+        self.load_manager()
+        self.run_lua('''
+          local M=DWBModel;local p=M.new();M.importClauses(p,{{dmgtype='fire',dice={'d6'},modifier=3}});
+          assert(M.recordResults(p,{aDice={{type='d6',result=4}}}));
+          assert(M.appliedTotal(p)==7);p.doubleDamage=true;assert(M.appliedTotal(p)==14);
+          assert(p.roll.aDice[1].result==4);local delivered;
+          ActorManager={resolveActor=function(a)return {name=a} end,isPC=function()return true end};
+          DWBFeatures={validateClaims=function()return true end,commit=function()end};
+          ActionCore={encodeRollClauses=function()end,decodeRollClauses=function()end,encodeDamageTypesDisplay=function()end};
+          ActionsManager={total=function(r)return r.nMod+r.aDice[1].result end,resolveAction=function(a,b,r)delivered=r end};
+          ActionAttackCore={clearCritState=function()end};DB={deleteNode=function()end};DWB.sendView=function()end;
+          local ctx={id='test',source='source',target='target',plan=p,label='Sword',state='results'};
+          DWB.apply(ctx);assert(ctx.state=='applied');
+          assert(delivered.bModDouble and delivered.sDesc:find('[DOUBLE]',1,true));
+          assert(delivered.nTotal==7 and delivered.aDice[1].result==4 and delivered.nMod==3);
+          local q=M.new();assert(M.replace(q,M.preset(p,'saved')));assert(not q.doubleDamage);
         ''')
 
 if __name__ == '__main__':

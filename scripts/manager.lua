@@ -293,8 +293,8 @@ function prepare(ctx)
   ctx.expirations = expires; ctx.prepared = roll;
   local p = DWBModel.new(ctx.label);
   p.flags = {};
-  for _, key in ipairs({ "bModMax", "bModHalf", "bModDouble", "nMult" }) do p.flags[key] = roll[key]; end
-  local imported, importError = DWBModel.importClauses(p, roll.clauses);
+  for _, key in ipairs({ "bModMax", "bModHalf", "bModDouble", "nMult", "bSecret", "bTower" }) do p.flags[key] = roll[key]; end
+  local imported, importError = DWBModel.importClauses(p, DWBModel.rollClauses(roll));
   if not imported then error(importError or "Could not import damage clauses"); end
   p.magical = ctx.cantrip == true;
   for _, c in ipairs(roll.clauses or {}) do if (c.dmgtype or ""):match("magic") then p.magical = true; end end
@@ -408,16 +408,25 @@ function receiveCommand(msg)
     if ctx.state == "rolling" then
       ok, err = DWBModel.recordResults(ctx.plan, data);
     else
-      local d = data.aDice and data.aDice[1];
       local want = ctx.plan.roll.aDice[ctx.rerollIndex];
-      ok = d and #data.aDice == 1 and DWBModel.dieType(d) == DWBModel.dieType(want) and DWBModel.reroll(ctx.plan, ctx.rerollIndex, d.value or d.result);
+      local accepted;accepted,err=DWBModel.resolveDice({want},data.aDice or {});
+      local d=accepted and accepted[1];
+      ok=d and DWBModel.reroll(ctx.plan,ctx.rerollIndex,d.value or d.result);
+      if ok then
+        for _,key in ipairs({"diceskin","dicebodycolor","dicetextcolor","iconcolor","backcolor","rolls"}) do
+          want[key]=DWBModel.copy(d[key]);
+        end
+      end
       if ok then ctx.plan.turnRerolls = DWBFeatures.countReroll(ctx); end
     end
     if not ok then ctx.state = "edit"; ctx.plan.phase = "edit"; tell(err or "Invalid dice result; damage was not applied");
     else ctx.state = "results"; end
     sendView(ctx);
   elseif op == "undo" and ctx.state == "results" then
+    auditUndo(ctx);
     if DWBModel.undo(ctx.plan) then ctx.state = "edit"; sendView(ctx); end
+  elseif op == "double" and ctx.state == "results" and type(data.enabled)=="boolean" then
+    ctx.plan.doubleDamage=data.enabled; sendView(ctx);
   elseif op == "reroll" and ctx.state == "results" then
     local i = tonumber(data.index);
     local die = i and ctx.plan.roll.aDice[i];
@@ -431,9 +440,40 @@ function receiveCommand(msg)
 end
 
 function sendRoll(ctx, roll, reroll)
+  roll=DWBModel.copy(roll);
+  roll.bSecret=secretRoll(ctx);
   local msg = { type = "DWB_ROLL", id = ctx.id, nonce = ctx.nonce,
-    payload = Utility.encodeJSON(roll), reroll = reroll and "1" or "0" };
+    source=ctx.source, payload = Utility.encodeJSON(roll), reroll = reroll and "1" or "0" };
   if ctx.owner == "" then receiveRoll(msg); else Comm.deliverOOBMessage(msg, ctx.owner); end
+end
+
+function secretRoll(ctx)
+  local source,target=ActorManager.resolveActor(ctx.source),ActorManager.resolveActor(ctx.target);
+  local flags=ctx.plan and ctx.plan.flags or {};
+  if flags.bSecret or flags.bTower then return true; end
+  if ctx.owner=="" and OptionsManager.isOption("REVL","off") then return true; end
+  if source and CombatManager.isCTHidden(ActorManager.getCTNode(source)) then return true; end
+  return not ActionsManager.getShowResultToPlayer(source,target);
+end
+
+function auditUndo(ctx)
+  local parts={}; local p=ctx.plan;
+  for _,z in ipairs(p.zones) do
+    local dice={};
+    for i,m in ipairs(p.roll and p.roll.mapping or {}) do
+      if m.zone==z.id then
+        local d=p.roll.aDice[i];
+        local mode=(d.nReroll or 0)>0 and ("r"..d.nReroll..(d.bRerollNoLimit and "" or "#1")) or "";
+        table.insert(dice,DWBModel.dieType(d)..mode.."="..tostring(d.value or d.result));
+      end
+    end
+    if z.modifier~=0 then table.insert(dice,string.format("%+d",z.modifier)); end
+    table.insert(parts,z.dtype.." ("..z.side.."): "..table.concat(dice,", "));
+  end
+  local text=(ctx.owner~="" and ctx.owner or "GM").." — "..(ctx.publicName or "").." / "..ctx.label..": UNDONE\n"..table.concat(parts,"; ").."\nTotal: "..DWBModel.total(p)..(p.doubleDamage and " (x2 enabled)" or "")..". No damage applied.";
+  local message={text=text,font="systemfont",icon="action_damage",secret=true};
+  Comm.deliverChatMessage(message,"");
+  if ctx.owner~="" then Comm.deliverChatMessage(DWBModel.copy(message),ctx.owner); end
 end
 
 function receiveRoll(msg)
@@ -441,7 +481,7 @@ function receiveRoll(msg)
   if not r then return; end
   r.sType = msg.reroll == "1" and "dwbreroll" or "dwbstage";
   r.sDWBId = msg.id; r.sDWBNonce = msg.nonce;
-  r.sDesc = "Damage Workbench (private)"; r.bSecret = true;
+  r.sDesc = "Damage Workbench";
   local dice = {};
   local cursor = 1;
   for _, clause in ipairs(r.clauses or {}) do
@@ -451,8 +491,14 @@ function receiveRoll(msg)
         local styled = {};
         DiceRollManager.addDamageDice(styled, { DWBModel.dieType(d) }, { dmgtype = clause.dmgtype,
           iconcolor = (d.type or ""):match("^g") and "00FF00" or nil,
-          nReroll = d.nReroll, bRerollNoLimit = d.bRerollNoLimit });
-        table.insert(dice, styled[1] or d);
+        });
+        local result=styled[1] or d;
+        result.mode=d.mode;
+        -- Retain dropped skins and let the native throw engine execute the mode.
+        for _,key in ipairs({"diceskin","dicebodycolor","dicetextcolor","iconcolor","backcolor"}) do
+          if d[key]~=nil then result[key]=d[key]; end
+        end
+        table.insert(dice, result);
       end
       cursor = cursor + 1;
     end
@@ -463,7 +509,7 @@ function receiveRoll(msg)
   local w = Interface.findWindow("dwb_panel", "");
   if w then w.setBusy(true); end
   -- Roll directly: effects/modifier stack were already captured exactly once.
-  ActionsManager.roll(nil, nil, r);
+  ActionsManager.roll(ActorManager.resolveActor(msg.source), nil, r);
 end
 
 function onStageResult(_, _, r)
@@ -491,6 +537,7 @@ function apply(ctx)
   -- Mark before dispatch; repeated clicks/OOB delivery cannot apply twice.
   ctx.state = "applying";
   local r = DWBModel.copy(ctx.plan.roll);
+  r.bModDouble=r.bModDouble or ctx.plan.doubleDamage==true;
   r.sType = "damage"; r.sDesc = "[DAMAGE" .. (ctx.range and " (" .. ctx.range .. ")" or "") .. "] " .. ctx.label;
   if ctx.plan.critical then r.sDesc = r.sDesc .. " [CRITICAL]"; end
   if r.bModHalf then r.sDesc = r.sDesc .. " [HALF]"; end
@@ -598,7 +645,7 @@ function drop(w, drag, zoneId)
     local r = rolls and rolls[1];
     if r then
       ActionCore.decodeRollClauses(r);
-      local imported, importError = DWBModel.appendClauses(p, r.clauses);
+      local imported, importError = DWBModel.appendClauses(p, DWBModel.rollClauses(r));
       if not imported then tell(importError or "Could not import damage action"); end
       w.refresh();
     end

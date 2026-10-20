@@ -29,7 +29,8 @@ end
 
 function execute(command)
   local target = ActorManager.resolveActor(targetPath);
-  if command == "suite" then suite(); return;
+  if command == "revision" then revisionSuite(); return;
+  elseif command == "suite" then suite(); return;
   elseif command == "ui" then uiSuite(); return;
   elseif command == "exact" then exactSuite(); return;
   elseif command == "drops" then dropSuite(); return;
@@ -353,4 +354,75 @@ function dropSuite()
   end);
   DB.setValue(target,"type","string",oldType); DB.deleteNode(power);
   if not success then error(err); end
+end
+
+-- Revision acceptance uses only the training fixture and local demo panel.
+function revisionSuite()
+  local originalRoll=ActionsManager.roll;
+  local originalNotify=ActionDamageD20.notifyApplyDamage;
+  local oldRev,oldShow=OptionsManager.getOption("REVL"),OptionsManager.getOption("SHRR");
+  local oldEnabled=OptionsManager.getOption("DWB_ENABLED");
+  local ctx;
+  local success,err=pcall(function()
+    OptionsManager.setOption("DWB_ENABLED","on");
+    execute("weapon"); local list=DWB.approvals(); ctx=assert(list[#list]); DWB.approve(ctx.id);
+    OptionsManager.setOption("REVL","on");
+    for _,setting in ipairs({"on","off","pc","pconly"}) do
+      OptionsManager.setOption("SHRR",setting);
+      assert(DWB.secretRoll(ctx)==not ActionsManager.getShowResultToPlayer(ActorManager.resolveActor(ctx.source),ActorManager.resolveActor(ctx.target)),"visibility mismatch: "..setting);
+    end
+    log("PASS native visibility policy on/off/friendly/friendly-only");
+    local p=DWBModel.new("Revision fixture");p.id=ctx.id;
+    DWBModel.importClauses(p,{{dmgtype="force",dice={"d6"},modifier=3,nReroll=2}});
+    ActionsManager.roll=function(_,_,r)
+      for _,d in ipairs(r.aDice) do assert(d.mode=="r2#1");d.result=4;d.value=4;end
+      DWB.onStageResult(nil,nil,r);
+    end;
+    DWB.command(ctx.id,"roll",p);assert(ctx.state=="results");
+    local messages={};local deliver=Comm.deliverChatMessage;
+    Comm.deliverChatMessage=function(m,u)table.insert(messages,{message=m,user=u});end;
+    local undone,undoError=pcall(function() DWB.command(ctx.id,"undo");end);
+    Comm.deliverChatMessage=deliver;assert(undone,undoError);
+    assert(ctx.state=="edit" and #messages==1 and messages[1].user=="");
+    assert(messages[1].message.text:find("d6r2#1=4",1,true));
+    log("PASS Undo audit includes exact dice/results and targets GM only for host owner");
+    DWB.command(ctx.id,"roll",DWBModel.copy(ctx.plan));
+    local w=assert(Interface.findWindow("dwb_panel",""));
+    assert(w.double.isVisible() and w.double.getValue()==0);w.toggleDouble();
+    assert(ctx.plan.doubleDamage and w.double.getValue()==1 and DWBModel.appliedTotal(ctx.plan)==14);
+    ActionDamageD20.notifyApplyDamage=function(source,target,r)ActionHealthD20.apply(source,target,r);end;
+    local before=DB.getValue(targetPath..".wounds",0);
+    DWB.command(ctx.id,"apply");assert(ctx.state=="applied");
+    assert(DB.getValue(targetPath..".wounds",0)-before==14,"x2 did not apply exactly twice the raw damage");
+    log("PASS native x2 toggle applies 14 from raw 7 without rerolling");
+  end);
+  ActionsManager.roll=originalRoll;ActionDamageD20.notifyApplyDamage=originalNotify;
+  OptionsManager.setOption("REVL",oldRev);OptionsManager.setOption("SHRR",oldShow);
+  OptionsManager.setOption("DWB_ENABLED",oldEnabled);
+  if not success then error(err);end
+  DWB.demo();local w=Interface.findWindow("dwb_panel","");local p=w.getPlan();
+  local z=p.zones[1];z.dice={};z.modifier=0;p.zones={z};
+  for _=1,12 do DWBModel.addDice(p,z.id,{{type="d6",mode="r5#1"}});end
+  w.refresh();
+  local cell=w.getZoneControl(z.id).subwindow.dice.getWindows()[2];
+  cell.face.onMenuSelection(7,6);assert(z.dice[1].nReroll==2);
+  cell=w.getZoneControl(z.id).subwindow.dice.getWindows()[2];cell.face.onMenuSelection(7,8);assert(z.dice[1].nReroll==0);
+  w.setAutoReroll(z.id,1,5);
+  local saved=DWBModel.preset(p,"Auto reroll saved");local restored=DWBModel.new();assert(DWBModel.replace(restored,saved));assert(restored.zones[1].dice[1].nReroll==5);
+  log("PASS native context selection/no-reroll and preset retain threshold");
+  local previous=ActionsManager.getResultHandler("dwbstage");
+  ActionsManager.registerResultHandler("dwbstage",function(source,target,r)
+    ActionsManager.registerResultHandler("dwbstage",previous);
+    log("NATIVE REROLL DATA "..Utility.encodeJSON(r.aDice));
+    previous(source,target,r);
+    local ok,errorText=pcall(function()
+      assert(#p.roll.aDice==12,"retained dice count mismatch");
+      assert(p.phase=="results","native results rejected");
+      local w=Interface.findWindow("dwb_panel","");w.toggleDouble();assert(DWBModel.appliedTotal(p)==DWBModel.total(p)*2);
+      log("PASS real native r5#1 throw accepted; total="..DWBModel.total(p));
+      log("REVISION SUITE COMPLETE");
+    end);
+    if not ok then log("FAIL "..tostring(errorText));end
+  end);
+  w.rollOrUndo();
 end

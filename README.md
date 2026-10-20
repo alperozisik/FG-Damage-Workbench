@@ -2,14 +2,14 @@
 
 <img src="docs/assets/damage-workbench-logo.png" alt="Damage Workbench" width="128" />
 
-This usage guide covers **v0.3.5**. [Changelog](CHANGELOG.md).
+This usage guide covers **v0.3.6**. [Changelog](CHANGELOG.md).
 
-On load, chat shows **Damage Workbench v0.3.5 loaded.**
+On load, chat shows **Damage Workbench v0.3.6 loaded.**
 
-![Damage Workbench v0.3.5](docs/screenshots/startup-version.png)
+![Damage Workbench v0.3.5 announcement example](docs/screenshots/startup-version.png)
 
 Review weapon and cantrip damage in Fantasy Grounds Unity 5E, adjust the dice,
-roll privately, and apply the result when you are ready.
+roll, and apply the result when you are ready.
 
 [Türkçe kullanım](README.tr.md) · [MIT License](LICENSE)
 
@@ -86,6 +86,18 @@ before rolling.
 
 With the list unlocked, use each section's **+** to add a type and its dropdowns to change types.
 
+## Automatic rerolls
+
+Before rolling, right-click a die and choose a threshold under **Reroll if lower or equal than**. **No auto reroll** is selected by default. Choices run from 1 to one below the die maximum; dice larger than d20 have no auto-reroll menu. Larger dice group choices into number ranges to fit FG's menu limit. Reopening the menu marks the current selection.
+
+A result at or below the threshold is rerolled **once** by FG's native dice engine; the second result stands. For example, `r2#1` rerolls 1s and 2s once. Dropped native reroll metadata is imported automatically, including repeated `rN` mode when present. Marked dice use a distinct setup color; dropped colors/skins and native result colors are retained. **Save** also preserves the threshold.
+
+Hover a result die to see its discarded automatic-reroll attempts. Only the retained value contributes to damage.
+
+![Automatic reroll results with x2 enabled](docs/screenshots/auto-reroll-results.png)
+
+This example retains 12d6 for a raw total of 58; x2 shows 116 on Apply. The demo cannot apply damage.
+
 ## Add Smite, Sneak Attack and other damage effects
 
 Drop an effect action from the character's Actions sheet, or an effect entry,
@@ -112,8 +124,7 @@ through the character's normal spell/effect controls.
 
 ## Roll, reroll, Undo and Apply
 
-**Roll** throws the dice privately. Results appear in separate boxes below the
-original dice; no damage is applied yet.
+**Roll** throws the dice. Visibility to other players follows the GM's **Chat: Show results to players** setting (On, Off, Friendly or Friendly only). Hidden/tower rolls and the GM-roll privacy setting remain respected. Results appear in separate boxes below the original dice; no damage is applied yet.
 
 Double-click a result die and confirm to **reroll** it. You must use the new
 result: you cannot restore that die's previous value. The prompt shows the
@@ -121,7 +132,9 @@ character's reroll count for the current combat turn.
 
 **Undo** discards the entire throw and returns to dice setup, including after
 a reroll. Use it when you chose the wrong dice and want to prepare damage again.
-The turn's reroll count is retained.
+The turn's reroll count is retained. Each Undo sends the discarded dice, values, damage types and total to **the GM and the undoing player only**.
+
+**x2** sits to the left of Apply and starts off. Turning it on doubles the amount shown on Apply without changing the dice results. It uses native damage multiplication, so target resistance/immunity still apply normally. This is a per-request choice and is not stored by Save.
 
 **Apply Damage** publishes the accepted results and applies damage to the target.
 The panel shows raw damage; resistance, immunity and other target defenses may

@@ -31,6 +31,7 @@
       <button_text name="roll"><bounds>300,-35,140,24</bounds><text>Roll</text><script>function onButtonPress() window.rollOrUndo(); end</script></button_text>
       <button_text name="save"><bounds>452,-35,70,24</bounds><text>Save</text><script>function onButtonPress() window.savePreset(); end</script></button_text>
       <button_text name="apply"><bounds>300,-35,180,24</bounds><text>Apply Damage</text><invisible /><script>function onButtonPress() window.applyDamage(); end</script></button_text>
+      <button_text_toggle name="double"><bounds>246,-35,44,24</bounds><text>x2</text><invisible /><tooltip text="Double damage on Apply" /><script>function onButtonPress() window.toggleDouble(); end</script></button_text_toggle>
       <resize><anchored><right offset="-5" /><bottom offset="-5" /></anchored></resize>
     </sheetdata>
   </windowclass>
@@ -75,7 +76,7 @@
       <genericcontrol name="face"><bounds>0,0,32,32</bounds><script>
         function onClickDown(button,x,y) return window.click(button); end
         function onClickRelease(button,x,y) return window.release(button); end
-        function onMenuSelection(selection) window.deleteFromMenu(selection); end
+        function onMenuSelection(...) window.menuSelection(...); end
         function onDoubleClick(x,y) return window.doubleClick(); end
         function onDragStart(button,x,y,draginfo) return window.drag(draginfo); end
         function onDrop(x,y,draginfo) return window.onDrop(x,y,draginfo); end

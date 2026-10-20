@@ -20,9 +20,61 @@ end
 function dieType(d)
   local s = type(d) == "table" and d.type or d;
   if type(s) ~= "string" then return nil; end
-  local sides = tonumber(s:match("^[dgrbp](%d+)$"));
+  local base = s:match("^([dgrbp]%d+)r%d+#?%d*$") or s;
+  local sides = tonumber(base:match("^[dgrbp](%d+)$"));
   if not contains({2, 3, 4, 6, 8, 10, 12, 20, 100}, sides) then return nil; end
   return "d" .. sides;
+end
+
+-- Native FG reroll mode: rN#1 rerolls once; rN repeats until above N.
+function normalizeDie(value)
+  local d = type(value)=="table" and copy(value) or {type=value};
+  local base=dieType(d);
+  if not base then return nil,"Unsupported die"; end
+  local suffix=(d.type or ""):match("^[dgrbp]%d+(r%d+#?%d*)$");
+  local mode=d.mode or suffix;
+  if mode and mode~="" then
+    local threshold,limit=mode:match("^r(%d+)#(%d+)$");
+    if not threshold then threshold=mode:match("^r(%d+)$"); end
+    if not threshold or (limit and limit~="1") then return nil,"Unsupported die mode"; end
+    if d.nReroll==nil then d.nReroll=tonumber(threshold); d.bRerollNoLimit=limit==nil; end
+  end
+  local sides=tonumber(base:sub(2));
+  if d.bRerollNoLimit~=nil and type(d.bRerollNoLimit)~="boolean" then return nil,"Invalid reroll limit"; end
+  if d.nReroll~=nil then
+    if type(d.nReroll)~="number" or d.nReroll~=math.floor(d.nReroll) or d.nReroll<0 or d.nReroll>=sides or (d.nReroll>0 and sides>20) then
+      return nil,"Auto reroll must be below the die maximum and requires d20 or smaller";
+    end
+  end
+  d.type=base; d.mode=nil; d.result=nil; d.value=nil; d.dropped=nil;
+  return d;
+end
+
+-- Native clause decoding can reduce a rolled die to its type string.
+-- Restore per-die modes and skins from the corresponding physical dice.
+function rollClauses(roll)
+  local clauses=copy(roll.clauses or {}); local cursor=1;
+  for _,c in ipairs(clauses) do
+    for i,d in ipairs(c.dice or {}) do
+      local physical=(roll.aDice or {})[cursor]; cursor=cursor+1;
+      if type(physical)=="table" and dieType(physical)==dieType(d) then
+        local merged=copy(physical);
+        if type(d)=="table" then for k,v in pairs(d) do merged[k]=copy(v); end end
+        c.dice[i]=merged;
+      end
+    end
+  end
+  return clauses;
+end
+
+function setAutoReroll(p,id,index,threshold)
+  if p.phase~="edit" then return false; end
+  local z=findZone(p,id); local d=z and z.dice[index];
+  if not d then return false; end
+  local candidate=copy(d); candidate.nReroll=threshold; candidate.bRerollNoLimit=false; candidate.mode=nil;
+  if not normalizeDie(candidate) then return false; end
+  d.nReroll=threshold; d.bRerollNoLimit=false; d.mode=nil;
+  touch(p); return true;
 end
 
 function new(label)
@@ -98,7 +150,8 @@ function addDice(p, id, dice, extra)
   for _, v in ipairs(dice) do
     local s = dieType(v);
     if not s then return false; end
-    local d = type(v) == "table" and copy(v) or { type = s };
+    local d,err = normalizeDie(v);
+    if not d then return false,err; end
     d.type = s; d.result = nil; d.value = nil;
     d.criticalOnly = extra == true;
     table.insert(clean, d);
@@ -146,6 +199,10 @@ function importClauses(p, clauses)
   for _, c in ipairs(clauses or {}) do
     for _, d in ipairs(c.dice or {}) do
       if not dieType(d) then return false, "This action uses an unsupported custom or signed die"; end
+      local candidate=type(d)=="table" and copy(d) or {type=d};
+      if c.nReroll~=nil then candidate.nReroll=c.nReroll; end
+      if c.bRerollNoLimit~=nil then candidate.bRerollNoLimit=c.bRerollNoLimit; end
+      local clean,err=normalizeDie(candidate); if not clean then return false,err; end
       incoming = incoming + 1;
     end
   end
@@ -159,12 +216,14 @@ function importClauses(p, clauses)
         local dice = {};
         for _, v in ipairs(c.dice or {}) do
           local d = type(v) == "table" and copy(v) or { type = v };
-          d.tags = copy(tags); d.nMin = c.nMin; d.nReroll = c.nReroll;
+          d.tags = copy(tags); d.nMin = c.nMin;
+          if c.nReroll~=nil then d.nReroll=c.nReroll; end
           d.bMax = c.bMax;
-          d.bRerollNoLimit = c.bRerollNoLimit;
+          if c.bRerollNoLimit~=nil then d.bRerollNoLimit=c.bRerollNoLimit; end
           table.insert(dice, d);
         end
-        addDice(p, z.id, dice, extra);
+        local added,err=addDice(p, z.id, dice, extra);
+        if not added then return false,err; end
         z.modifier = z.modifier + (c.modifier or 0);
         z.tags = copy(tags);
         z.extraCritDice = math.max(z.extraCritDice or 0, c.nExtraCritDice or 0);
@@ -239,6 +298,7 @@ end
 function valid(p)
   if type(p) ~= "table" or type(p.zones) ~= "table" or #p.zones > MAX_ZONES then return false, "Invalid damage plan"; end
   if type(p.critical) ~= "boolean" or type(p.magical) ~= "boolean" then return false, "Invalid damage options"; end
+  if p.doubleDamage~=nil and type(p.doubleDamage)~="boolean" then return false,"Invalid x2 option"; end
   if p.claims ~= nil and type(p.claims) ~= "table" then return false, "Invalid feature claims"; end
   if p.choices ~= nil and type(p.choices) ~= "table" then return false, "Invalid feature choices"; end
   for _, list in ipairs({ p.claims or {}, p.choices or {} }) do
@@ -264,6 +324,7 @@ function valid(p)
     nFixed = nFixed + math.abs(z.modifier);
     for _, d in ipairs(z.dice) do
       if type(d) ~= "table" or not dieType(d) then return false, "Unsupported die"; end
+      local clean,err=normalizeDie(d); if not clean then return false,err; end
       nDice = nDice + 1;
     end
   end
@@ -290,10 +351,11 @@ function buildRoll(p)
   for key, value in pairs(p.flags or {}) do r[key] = value; end
   local function append(z, d, isCrit, index)
     local dmgtype = typeText(z, d, isCrit, p.magical);
-    local die = copy(d); die.type = dieType(d); die.result = nil; die.value = nil;
+    local die = normalizeDie(d); die.type = dieType(d); die.result = nil; die.value = nil;
+    if (die.nReroll or 0)>0 then die.mode="r"..die.nReroll..(die.bRerollNoLimit and "" or "#1"); end
     if isCrit then die.type = "g" .. die.type:sub(2); end
     table.insert(r.aDice, die);
-    table.insert(r.clauses, { dmgtype = dmgtype, dice = { die.type }, modifier = 0, nMin = d.nMin, bMax = d.bMax });
+    table.insert(r.clauses, { dmgtype = dmgtype, dice = { die.type }, modifier = 0, nMin = d.nMin, bMax = d.bMax, nReroll=die.nReroll, bRerollNoLimit=die.bRerollNoLimit });
     table.insert(r.mapping, { zone = z.id, index = index, critical = isCrit });
   end
   for _, z in ipairs(p.zones) do
@@ -315,23 +377,55 @@ function buildRoll(p)
   return r;
 end
 
+-- FG inserts discarded attempts immediately before each retained reroll.
+-- Consume each chain against the original die, preserving the original order.
+function resolveDice(expected, physical)
+  local out={}; local cursor=1;
+  local function validValue(d,w)
+    local value=d and (d.value or d.result);
+    return d and dieType(d)==dieType(w) and type(value)=="number" and value==math.floor(value) and value>=1 and value<=tonumber(dieType(w):sub(2));
+  end
+  for _,want in ipairs(expected) do
+    local attempts={};local count=0;local d=physical[cursor];
+    while d and d.dropped do
+      count=count+1;
+      if not validValue(d,want) or (want.nReroll or 0)==0 or (d.value or d.result)>want.nReroll or (not want.bRerollNoLimit and count>1) then return nil,"Invalid discarded reroll"; end
+      table.insert(attempts,copy(d));cursor=cursor+1;d=physical[cursor];
+    end
+    if not validValue(d,want) then return nil,"Invalid die result"; end
+    local accepted=copy(d);
+    if count>0 then table.insert(attempts,copy(d));accepted.rolls=attempts;end
+    table.insert(out,accepted);cursor=cursor+1;
+  end
+  if cursor<=#physical then return nil,"Dice count mismatch"; end
+  return out;
+end
+
 function recordResults(p, roll)
   local expected, err = buildRoll(p);
   if not expected then return false, err; end
-  if #(roll.aDice or {}) ~= #expected.aDice then return false, "Dice count mismatch"; end
-  for i, d in ipairs(roll.aDice or {}) do
+  local accepted,resultError=resolveDice(expected.aDice,roll.aDice or {});
+  if not accepted then return false,resultError;end
+  for i, d in ipairs(accepted) do
     local want = expected.aDice[i];
     local value = d.value or d.result;
     if dieType(d) ~= dieType(want) or type(value) ~= "number" or value ~= math.floor(value) or value < 1 or value > tonumber(dieType(d):sub(2)) then return false, "Invalid die result"; end
     want.result = value; want.value = value;
     if (p.flags and p.flags.bModMax) or want.bMax then want.value = tonumber(dieType(want):sub(2));
     elseif want.nMin then want.value = math.max(want.value, math.min(want.nMin, tonumber(dieType(want):sub(2)))); end
-    want.diceskin = d.diceskin; want.dicebodycolor = d.dicebodycolor; want.dicetextcolor = d.dicetextcolor;
+    for _,key in ipairs({"diceskin","dicebodycolor","dicetextcolor","iconcolor","backcolor"}) do
+      if d[key]~=nil then want[key]=d[key];end
+    end
+    want.rolls=copy(d.rolls);
     want.result = want.value;
   end
   expected.mapping = expected.mapping or {};
   p.roll = expected; p.phase = "results"; p.rerolls = p.rerolls or 0;
   touch(p); return true;
+end
+
+function appliedTotal(p)
+  return total(p)*(p.doubleDamage and 2 or 1);
 end
 
 function total(p, zoneId)
@@ -370,6 +464,7 @@ function replace(p, saved)
   local ok = valid(t);
   if not ok then return false; end
   p.zones = t.zones; p.serial = t.serial; p.critical = t.critical; p.magical = t.magical;
+  p.doubleDamage=false;
   -- A preset is a layout, never authority to spend a feature again.
   p.claims = {}; p.roll = nil; p.rerolls = 0;
   p.choices = copy(t.choices or {});

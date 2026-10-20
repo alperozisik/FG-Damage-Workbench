@@ -5,6 +5,20 @@ This log starts with v0.3.5; earlier releases remain in GitHub Releases.
 
 ## [Unreleased]
 
+## [0.3.6] - 2026-10-20
+
+### Added
+
+- Auto-reroll thresholds in the die context menu, with selected-state indicators and saved-layout persistence.
+- Private Undo audit messages for the GM and the request owner, listing discarded dice and results.
+- An initially off x2 toggle beside Apply, using the native damage multiplier.
+
+### Fixed
+
+- Staged dice visibility now follows FG's Show results to players policy, while retaining hidden/tower and GM-roll privacy.
+- Native reroll modes and die colors survive drops, critical copies and throw transport.
+- Native discarded reroll attempts are validated and excluded from totals while retaining their order and history in result tooltips.
+
 ### Documentation
 
 - Remove the mouse pointer and blue automation halo from the Critical damage-type screenshot.
@@ -23,5 +37,7 @@ This log starts with v0.3.5; earlier releases remain in GitHub Releases.
 - The source archive includes the changelog and current illustrated usage guides.
 - Package builds check that the load-message version matches extension metadata.
 
-[Unreleased]: https://github.com/alperozisik/FG-Damage-Workbench/compare/v0.3.5...HEAD
+[Unreleased]: https://github.com/alperozisik/FG-Damage-Workbench/compare/v0.3.6...HEAD
 [0.3.5]: https://github.com/alperozisik/FG-Damage-Workbench/releases/tag/v0.3.5
+
+[0.3.6]: https://github.com/alperozisik/FG-Damage-Workbench/compare/v0.3.5...v0.3.6

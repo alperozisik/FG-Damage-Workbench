@@ -1,7 +1,47 @@
-# Verification record — 2026-10-19
+# Verification record — 2026-10-20
 
-This record covers version 0.3.5 and retains earlier verification history. The tables distinguish executed tests from
+This record covers version 0.3.6 and retains earlier verification history. The tables distinguish executed tests from
 items that still require acceptance testing. Tests use a separate local sandbox.
+
+## 0.3.6 visibility, Undo audit, automatic rerolls and x2
+
+Twenty-four automated tests passed, including compilation of all Lua and inline
+XML scripts. Added cases cover native per-die modes/skins after clause decoding,
+once/repeated reroll metadata and saved layouts, context-menu choices through
+d20 (and no menu on d100), selected-state markers, discarded reroll chains,
+private GM/owner audit recipients and native x2 application without changing dice.
+
+Executed `/dwbtest revision` in Damage_Workbench_Sandbox using FG 5.1.14
+(2026-10-19), CoreRPG/5E rulesets 2026-10-06, and the existing third-party stack
+(including BCE Gold 7.9). The test enables DWB temporarily and restores prior
+DWB/REVL/SHRR options afterward. Only DWB Training Target receives test damage.
+
+- Compared the visibility decision against FG's native Show results to players
+  implementation for on/off/friendly/friendly-only.
+- Intercepted Undo delivery and checked exact discarded results and the GM-only
+  destination for a host-owned request. The separate GM/player recipient pair
+  is covered by automated transport tests.
+- Verified the native x2 button starts off, toggles on, and applies 14 damage
+  from an unchanged d6=4 plus 3, through native ActionHealthD20.
+- Exercised native die-context callbacks and saved-layout round trips.
+- Opened the real right-click menu: reroll appeared above Delete, No auto reroll
+  appeared first, values ran upward, and the selected threshold was marked.
+  Selected 2 through the actual menu without console errors.
+- Threw twelve real d6 with `r5#1`. FG inserted discarded attempts before each
+  retained die. DWB accepted twelve retained results in the original order;
+  its raw total of 58 matched FG's total. x2 then displayed Apply 116 Damage.
+  A fresh run after the final menu changes also passed.
+
+The new auto-reroll-results.png is a cropped native development-build capture
+for this revision, with the pointer and automation halo outside the panel.
+Older setup/save images remain examples from 0.3.4; startup-version.png explicitly
+shows the 0.3.5 announcement example. Current version text is specified separately
+in the guides. No UI content was redrawn in the new capture.
+
+Remaining acceptance: observe throw visibility and private Undo delivery from
+two separately connected player clients. Native repeated `rN` and every optional
+paid dice skin were not separately exercised in a live client; their metadata
+transport and repeated-chain handling are covered by automated tests.
 
 ## Documentation image cleanup
 

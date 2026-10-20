@@ -2,14 +2,14 @@
 
 <img src="docs/assets/damage-workbench-logo.png" alt="Damage Workbench" width="128" />
 
-Bu kullanım rehberi **v0.3.5** içindir. [Değişiklik günlüğü](CHANGELOG.md).
+Bu kullanım rehberi **v0.3.6** içindir. [Değişiklik günlüğü](CHANGELOG.md).
 
-Yüklenince sohbette **Damage Workbench v0.3.5 loaded.** mesajı görünür.
+Yüklenince sohbette **Damage Workbench v0.3.6 loaded.** mesajı görünür.
 
-![Damage Workbench v0.3.5](docs/screenshots/startup-version.png)
+![Damage Workbench v0.3.5 announcement example](docs/screenshots/startup-version.png)
 
 Fantasy Grounds Unity 5E'de silah ve cantrip hasarını incele, zarları düzenle,
-gizli atış yap ve hazır olduğunda sonucu uygula.
+zarları at ve hazır olduğunda sonucu uygula.
 
 [English guide](README.md) · [MIT Lisansı](LICENSE)
 
@@ -86,6 +86,18 @@ bir hasar türü seç.
 
 Kilit açıkken her bölümün **+** düğmesiyle tür ekleyebilir, açılır listelerden tür değiştirebilirsin.
 
+## Otomatik reroll
+
+Atıştan önce bir zara sağ tıkla ve **Reroll if lower or equal than** menüsünden eşik seç. Varsayılan **No auto reroll** işaretlidir. 1'den zarın en büyük değerinin bir altına kadar seçim yapılabilir; d20'den büyük zarlarda menü yoktur. FG'nin menü sınırı nedeniyle büyük zarların seçenekleri sayı aralıkları altında gruplanır. Seçili eşik menü tekrar açıldığında işaretli görünür.
+
+Eşiğe eşit veya daha düşük sonuç, native FG motoruyla **bir kez** yeniden atılır; ikinci sonuç kullanılır. Örneğin `r2#1`, 1 ve 2 sonuçlarını bir kez yeniler. Drop edilen native reroll bilgisi otomatik alınır; tekrarlı `rN` modu varsa o davranış korunur. Reroll işaretli zar düzenleme görünümünde renkle ayırt edilir; drop edilen renk/skin ve native sonuç renkleri korunur. **Save** eşik ayarını da saklar.
+
+Sonuç zarının üzerine gelerek otomatik reroll sırasında elenen denemeleri görebilirsin. Hasara yalnızca kabul edilen sonuç eklenir.
+
+![Otomatik reroll sonuçları ve açık x2](docs/screenshots/auto-reroll-results.png)
+
+Bu örnekte 12d6 sonucu 58; x2 açıkken Apply üzerinde 116 görünür. Demo hasar uygulamaz.
+
 ## Smite, Sneak Attack ve diğer hasar effect'lerini ekle
 
 Karakterin Actions sayfasındaki effect aksiyonunu veya bir effect kaydını,
@@ -111,15 +123,16 @@ normal spell/effect kontrollerinden yönet.
 
 ## Roll, reroll, Undo ve Apply
 
-**Roll**, zarları gizli atar. Sonuçlar, ilk zar kutularının altında ayrı kutularda
-görünür; henüz hasar uygulanmaz.
+**Roll**, zarları atar. Atışın diğer oyunculara görünürlüğü GM'nin **Chat: Show results to players** ayarını izler (On, Off, Friendly veya Friendly only). Gizli/tower atışları ve kapalı GM roll ayarı korunur. Sonuçlar, ilk zar kutularının altında ayrı kutularda görünür; henüz hasar uygulanmaz.
 
 Bir sonuç zarına çift tıklayıp onaylayarak **reroll** yap. Yeni sonucu kullanman
 gerekir; o zarın eski sonucuna dönemezsin. Onay penceresi, karakterin mevcut
 combat turundaki reroll sayısını gösterir.
 
 **Undo**, reroll sonrasında da tüm atışı bırakıp zar düzenlemeye döner. Yanlış
-zarları seçtiysen hasarı yeniden hazırlamak için kullan. Turun reroll sayacı korunur.
+zarları seçtiysen hasarı yeniden hazırlamak için kullan. Turun reroll sayacı korunur. Her Undo, kaldırılan zarları, sonuçlarını, hasar türlerini ve toplamı **yalnızca DM ve Undo yapan oyuncunun** sohbetine yazar.
+
+**x2**, Apply düğmesinin solundadır ve başlangıçta kapalıdır. Açıldığında Apply üzerindeki toplam iki katına çıkar; zar sonuçları değişmez. Çarpan native hasar uygulamasına gider; hedefin resistance/immunity işlemleri normal çalışır. Bu seçim tek hasar isteği içindir, Save ile saklanmaz.
 
 **Apply Damage**, kabul ettiğin sonuçları sohbete gönderir ve hedefe hasarı uygular.
 Panel ham hasarı gösterir; resistance, immunity ve diğer hedef savunmaları alınan
