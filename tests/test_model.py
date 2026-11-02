@@ -417,7 +417,7 @@ class ModelTests(unittest.TestCase):
           local p=DWBModel.new('Sword');DWBModel.importClauses(p,{{dmgtype='slashing',dice={'d6'},modifier=3}});
           assert(DWBModel.recordResults(p,{aDice={{type='d6',result=4}}}));
           local ctx={source='source',target='target',owner='Alice',plan=p,label='Sword',publicName='Fighter'};
-          assert(not DWB.secretRoll(ctx));friendly=false;assert(DWB.secretRoll(ctx));assert(gated==2);
+          assert(not DWB.secretRoll(ctx));friendly=false;assert(not DWB.secretRoll(ctx));assert(gated==0);
           friendly=true;hidden=true;assert(DWB.secretRoll(ctx));hidden=false;
           p.flags={bSecret=true};assert(DWB.secretRoll(ctx));p.flags={};
           option='off';ctx.owner='';assert(DWB.secretRoll(ctx));ctx.owner='Alice';assert(not DWB.secretRoll(ctx));
@@ -425,6 +425,30 @@ class ModelTests(unittest.TestCase):
           DWB.auditUndo(ctx);assert(#messages==2 and messages[1].u=='' and messages[2].u=='Alice');
           assert(messages[1].m.secret and messages[1].m.text:find('d6=4',1,true) and messages[1].m.text:find('Total: 7',1,true));
           ctx.owner='';messages={};DWB.auditUndo(ctx);assert(#messages==1 and messages[1].u=='');
+        ''')
+
+    def test_hidden_gm_rolls_do_not_hide_player_throws_or_rerolls(self):
+        self.load_manager()
+        self.run_lua('''
+          Session={IsHost=true};local options={REVL='off',SHRR='off'};
+          OptionsManager={isOption=function(k,v)return options[k]==v end};
+          ActorManager={resolveActor=function(a)return a end,getCTNode=function(a)return a end};
+          CombatManager={isCTHidden=function()return false end};
+          ActionsManager={getShowResultToPlayer=function()error('Result-message policy must not gate physical dice')end};
+          Utility={encodeJSON=function(v)return DWBModel.copy(v)end};
+          local sent={};Comm={deliverOOBMessage=function(m,u)table.insert(sent,{message=m,user=u})end};
+          local ctx={id='request',nonce='throw',owner='Alice',source='pc',target='npc',plan={flags={}}};
+          for _,setting in ipairs({'off','on','pc','pconly'}) do
+            options.SHRR=setting;
+            for _,reroll in ipairs({false,true}) do
+              DWB.sendRoll(ctx,{aDice={{type='d6'}},bSecret=true},reroll);
+              local entry=sent[#sent];assert(entry.user=='Alice' and entry.message.payload.bSecret==false);
+              assert(entry.message.reroll==(reroll and '1' or '0'));
+            end
+          end
+          ctx.owner='';assert(DWB.secretRoll(ctx));options.REVL='on';assert(not DWB.secretRoll(ctx));
+          ctx.owner='Alice';ctx.plan.flags={bTower=true};assert(DWB.secretRoll(ctx));
+          ctx.plan.flags={bSecret=true};assert(DWB.secretRoll(ctx));
         ''')
 
     def test_native_roll_transport_keeps_mode_and_skin(self):

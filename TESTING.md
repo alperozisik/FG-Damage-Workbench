@@ -1,7 +1,27 @@
-# Verification record — 2026-10-20
+# Verification record — 2026-11-02
 
-This record covers version 0.3.6 and retains earlier verification history. The tables distinguish executed tests from
+This record covers version 0.3.7 and retains earlier verification history. The tables distinguish executed tests from
 items that still require acceptance testing. Tests use a separate local sandbox.
+
+## 0.3.7 player dice visibility regression
+
+The 0.3.6 physical-throw policy incorrectly reused SHRR (Show results to
+players), which controls native result messages. A read-only check of the
+reported campaign found REVL=off and SHRR=off; no campaign setting was changed.
+Current installed CoreRPG source was checked on 2026-11-02: buildThrow assigns
+rRoll.bSecret directly to rThrow.secret, while getShowResultToPlayer is a
+separate result-message policy. The correction removes SHRR from physical
+throw decisions and retains explicit secrecy, tower, hidden-source and GM
+REVL handling.
+
+All 25 automated tests passed. The new regression routes both initial throws
+and rerolls to Alice with REVL off and every SHRR value (off/on/pc/pconly),
+checks that bSecret is false, and fails if the result-message policy is called.
+Existing tests retain GM hidden-roll and explicit secret/tower checks. The
+native sandbox harness was updated to check the corrected policy; it was not
+rerun for this revision. No multi-client visual acceptance test was performed.
+Earlier 0.3.6 live-test observations below are historical, including the
+incorrect SHRR-dependent visibility assertion now superseded by this fix.
 
 ## 0.3.6 visibility, Undo audit, automatic rerolls and x2
 

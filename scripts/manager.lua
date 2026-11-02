@@ -448,12 +448,14 @@ function sendRoll(ctx, roll, reroll)
 end
 
 function secretRoll(ctx)
-  local source,target=ActorManager.resolveActor(ctx.source),ActorManager.resolveActor(ctx.target);
+  local source=ActorManager.resolveActor(ctx.source);
   local flags=ctx.plan and ctx.plan.flags or {};
   if flags.bSecret or flags.bTower then return true; end
   if ctx.owner=="" and OptionsManager.isOption("REVL","off") then return true; end
   if source and CombatManager.isCTHidden(ActorManager.getCTNode(source)) then return true; end
-  return not ActionsManager.getShowResultToPlayer(source,target);
+  -- SHRR controls result messages, not physical player dice. Native throws
+  -- use bSecret; applying the result policy here hides ordinary player rolls.
+  return false;
 end
 
 function auditUndo(ctx)

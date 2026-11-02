@@ -2,9 +2,9 @@
 
 <img src="docs/assets/damage-workbench-logo.png" alt="Damage Workbench" width="128" />
 
-Bu kullanım rehberi **v0.3.6** içindir. [Değişiklik günlüğü](CHANGELOG.md).
+Bu kullanım rehberi **v0.3.7** içindir. [Değişiklik günlüğü](CHANGELOG.md).
 
-Yüklenince sohbette **Damage Workbench v0.3.6 loaded.** mesajı görünür.
+Yüklenince sohbette **Damage Workbench v0.3.7 loaded.** mesajı görünür.
 
 ![Damage Workbench v0.3.5 announcement example](docs/screenshots/startup-version.png)
 
@@ -123,7 +123,7 @@ normal spell/effect kontrollerinden yönet.
 
 ## Roll, reroll, Undo ve Apply
 
-**Roll**, zarları atar. Atışın diğer oyunculara görünürlüğü GM'nin **Chat: Show results to players** ayarını izler (On, Off, Friendly veya Friendly only). Gizli/tower atışları ve kapalı GM roll ayarı korunur. Sonuçlar, ilk zar kutularının altında ayrı kutularda görünür; henüz hasar uygulanmaz.
+**Roll**, zarları atar. Oyuncuların normal atışları ve reroll'ları, **Chat: Show GM rolls** kapalı olsa da diğer oyunculara görünür. DM atışları bu GM ayarına uyar; açıkça gizli/tower atışları gizli kalır. **Chat: Show results to players** (On, Off, Friendly veya Friendly only) native sonuç mesajlarını ayrıca yönetir; oyuncuların fiziksel zarlarını gizlemez. Sonuçlar, ilk zar kutularının altında ayrı kutularda görünür; henüz hasar uygulanmaz.
 
 Bir sonuç zarına çift tıklayıp onaylayarak **reroll** yap. Yeni sonucu kullanman
 gerekir; o zarın eski sonucuna dönemezsin. Onay penceresi, karakterin mevcut

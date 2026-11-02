@@ -5,6 +5,12 @@ This log starts with v0.3.5; earlier releases remain in GitHub Releases.
 
 ## [Unreleased]
 
+## [0.3.7] - 2026-11-02
+
+### Fixed
+
+- Ordinary player throws and rerolls stay visible when the GM hides GM rolls or disables result messages. Show results to players (including Friendly) continues to govern native result messages, without hiding physical player dice. Explicit secret/tower rolls and hidden GM rolls retain their secrecy.
+
 ## [0.3.6] - 2026-10-20
 
 ### Added
@@ -37,7 +43,9 @@ This log starts with v0.3.5; earlier releases remain in GitHub Releases.
 - The source archive includes the changelog and current illustrated usage guides.
 - Package builds check that the load-message version matches extension metadata.
 
-[Unreleased]: https://github.com/alperozisik/FG-Damage-Workbench/compare/v0.3.6...HEAD
+[Unreleased]: https://github.com/alperozisik/FG-Damage-Workbench/compare/v0.3.7...HEAD
 [0.3.5]: https://github.com/alperozisik/FG-Damage-Workbench/releases/tag/v0.3.5
 
 [0.3.6]: https://github.com/alperozisik/FG-Damage-Workbench/compare/v0.3.5...v0.3.6
+
+[0.3.7]: https://github.com/alperozisik/FG-Damage-Workbench/compare/v0.3.6...v0.3.7

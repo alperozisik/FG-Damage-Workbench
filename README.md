@@ -2,9 +2,9 @@
 
 <img src="docs/assets/damage-workbench-logo.png" alt="Damage Workbench" width="128" />
 
-This usage guide covers **v0.3.6**. [Changelog](CHANGELOG.md).
+This usage guide covers **v0.3.7**. [Changelog](CHANGELOG.md).
 
-On load, chat shows **Damage Workbench v0.3.6 loaded.**
+On load, chat shows **Damage Workbench v0.3.7 loaded.**
 
 ![Damage Workbench v0.3.5 announcement example](docs/screenshots/startup-version.png)
 
@@ -124,7 +124,7 @@ through the character's normal spell/effect controls.
 
 ## Roll, reroll, Undo and Apply
 
-**Roll** throws the dice. Visibility to other players follows the GM's **Chat: Show results to players** setting (On, Off, Friendly or Friendly only). Hidden/tower rolls and the GM-roll privacy setting remain respected. Results appear in separate boxes below the original dice; no damage is applied yet.
+**Roll** throws the dice. Ordinary player throws and rerolls are visible to other players, even when **Chat: Show GM rolls** is Off. GM throws still respect that GM setting; explicit secret/tower throws stay private. **Chat: Show results to players** (On, Off, Friendly or Friendly only) governs native result messages separately; it does not hide physical player dice. Results appear in separate boxes below the original dice; no damage is applied yet.
 
 Double-click a result die and confirm to **reroll** it. You must use the new
 result: you cannot restore that die's previous value. The prompt shows the

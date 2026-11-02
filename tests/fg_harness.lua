@@ -369,9 +369,14 @@ function revisionSuite()
     OptionsManager.setOption("REVL","on");
     for _,setting in ipairs({"on","off","pc","pconly"}) do
       OptionsManager.setOption("SHRR",setting);
-      assert(DWB.secretRoll(ctx)==not ActionsManager.getShowResultToPlayer(ActorManager.resolveActor(ctx.source),ActorManager.resolveActor(ctx.target)),"visibility mismatch: "..setting);
+      assert(not DWB.secretRoll(ctx),"ordinary dice hidden by result-message policy: "..setting);
     end
-    log("PASS native visibility policy on/off/friendly/friendly-only");
+    OptionsManager.setOption("REVL","off");
+    assert(DWB.secretRoll(ctx),"GM hidden-roll setting was ignored");
+    local owner=ctx.owner;ctx.owner="DWB test player";
+    assert(not DWB.secretRoll(ctx),"GM hidden-roll setting leaked to player throw");ctx.owner=owner;
+    OptionsManager.setOption("REVL","on");
+    log("PASS player throws independent of result-message/GM policies; GM hidden rolls retained");
     local p=DWBModel.new("Revision fixture");p.id=ctx.id;
     DWBModel.importClauses(p,{{dmgtype="force",dice={"d6"},modifier=3,nReroll=2}});
     ActionsManager.roll=function(_,_,r)
