@@ -1,7 +1,31 @@
-# Verification record — 2026-11-02
+# Verification record — 2026-11-03
 
-This record covers version 0.3.7 and retains earlier verification history. The tables distinguish executed tests from
+This record covers version 0.3.8 and retains earlier verification history. The tables distinguish executed tests from
 items that still require acceptance testing. Tests use a separate local sandbox.
+
+## 0.3.8 roll totals and Apply audience
+
+All 27 automated tests passed. Added checks cover Roll/Reroll chat totals,
+fixed modifiers, immutable previous messages, public delivery without duplicate
+owner copies, private GM/owner delivery, hidden GM delivery, and Apply callback
+cleanup on both success and native-handler error. Unrelated native messages
+retain their original recipients and secrecy. Existing x2 and once-only Apply
+checks still pass.
+
+An additional local integration check loaded createActionMessage and
+ActionDamageD20.onRoll directly from the installed CoreRPG.pak into the Lua
+test runtime (the third-party code is not bundled). With host REVL=off, the
+actual native roll message was delivered publicly for a visible player throw,
+and privately to the GM plus a non-secret addressed owner copy for a private
+throw. Dice and modifier were retained, native notifyApplyDamage was called
+once per invocation, and both temporary callbacks were restored. This checks
+the installed native message pipeline with simulated chat delivery, not live
+network rendering. No multi-client visual test was performed for this revision.
+
+The native damage handler still applies damage and runs existing result hooks.
+Only the roll message identified by this DWB request is rerouted; native target
+defense/outcome messages keep their existing policy. Screenshot UI controls are
+unchanged from the earlier examples; current guides describe the new chat output.
 
 ## 0.3.7 player dice visibility regression
 

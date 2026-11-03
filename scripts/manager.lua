@@ -404,7 +404,7 @@ function receiveCommand(msg)
   elseif op == "landed" and (ctx.state == "rolling" or ctx.state == "rerolling") then
     if data.nonce ~= ctx.nonce then return; end
     ctx.nonce = nil;
-    local ok, err;
+    local ok, err;local reroll=ctx.state=="rerolling";
     if ctx.state == "rolling" then
       ok, err = DWBModel.recordResults(ctx.plan, data);
     else
@@ -420,7 +420,7 @@ function receiveCommand(msg)
       if ok then ctx.plan.turnRerolls = DWBFeatures.countReroll(ctx); end
     end
     if not ok then ctx.state = "edit"; ctx.plan.phase = "edit"; tell(err or "Invalid dice result; damage was not applied");
-    else ctx.state = "results"; end
+    else ctx.state = "results"; announceRoll(ctx,reroll); end
     sendView(ctx);
   elseif op == "undo" and ctx.state == "results" then
     auditUndo(ctx);
@@ -442,6 +442,7 @@ end
 function sendRoll(ctx, roll, reroll)
   roll=DWBModel.copy(roll);
   roll.bSecret=secretRoll(ctx);
+  ctx.rollSecret=roll.bSecret;
   local msg = { type = "DWB_ROLL", id = ctx.id, nonce = ctx.nonce,
     source=ctx.source, payload = Utility.encodeJSON(roll), reroll = reroll and "1" or "0" };
   if ctx.owner == "" then receiveRoll(msg); else Comm.deliverOOBMessage(msg, ctx.owner); end
@@ -456,6 +457,47 @@ function secretRoll(ctx)
   -- SHRR controls result messages, not physical player dice. Native throws
   -- use bSecret; applying the result policy here hides ordinary player rolls.
   return false;
+end
+
+-- A visible throw has a visible total. Private throws still report to their
+-- owner explicitly, so a host-side GM privacy setting cannot swallow it.
+function deliverRollMessage(ctx,message,deliver)
+  deliver=deliver or Comm.deliverChatMessage;
+  local secret=ctx.rollSecret;
+  if secret==nil then secret=secretRoll(ctx);end
+  local m=DWBModel.copy(message);
+  if not secret then m.secret=false;deliver(m);return;end
+  m.secret=true;deliver(m,"");
+  if (ctx.owner or "")~="" then
+    m=DWBModel.copy(message);m.secret=false;deliver(m,ctx.owner);
+  end
+end
+
+function announceRoll(ctx,reroll)
+  local p=ctx.plan;
+  local message={font="systemfont",icon="action_damage",type="dwbstage",
+    text=(ctx.publicName or "").." — "..ctx.label..(reroll and " [DWB REROLL]" or " [DWB ROLL]")..
+      " [PENDING APPLY] Total: "..DWBModel.total(p),
+    dice=DWBModel.copy(p.roll.aDice),diemodifier=p.roll.nMod or 0};
+  deliverRollMessage(ctx,message);
+end
+
+function resolveWithResultVisibility(ctx,source,target,roll)
+  local create,deliver=ActionsManager.createActionMessage,Comm.deliverChatMessage;
+  local ownMessages={};
+  ActionsManager.createActionMessage=function(actor,r,...)
+    local message=create(actor,r,...);
+    if r.sDWBCommitted==ctx.id then ownMessages[message]=true;end
+    return message;
+  end;
+  Comm.deliverChatMessage=function(message,recipient,...)
+    if ownMessages[message] and recipient==nil then
+      ownMessages[message]=nil;deliverRollMessage(ctx,message,deliver);
+    else return deliver(message,recipient,...);end
+  end;
+  local ok,err=pcall(ActionsManager.resolveAction,source,target,roll);
+  ActionsManager.createActionMessage=create;Comm.deliverChatMessage=deliver;
+  if not ok then error(err);end
 end
 
 function auditUndo(ctx)
@@ -475,7 +517,10 @@ function auditUndo(ctx)
   local text=(ctx.owner~="" and ctx.owner or "GM").." — "..(ctx.publicName or "").." / "..ctx.label..": UNDONE\n"..table.concat(parts,"; ").."\nTotal: "..DWBModel.total(p)..(p.doubleDamage and " (x2 enabled)" or "")..". No damage applied.";
   local message={text=text,font="systemfont",icon="action_damage",secret=true};
   Comm.deliverChatMessage(message,"");
-  if ctx.owner~="" then Comm.deliverChatMessage(DWBModel.copy(message),ctx.owner); end
+  if ctx.owner~="" then
+    local ownerMessage=DWBModel.copy(message);ownerMessage.secret=false;
+    Comm.deliverChatMessage(ownerMessage,ctx.owner);
+  end
 end
 
 function receiveRoll(msg)
@@ -573,7 +618,7 @@ function apply(ctx)
     end
     DWBFeatures.commit(ctx, ctx.plan);
     target.nOrder = 1;
-    ActionsManager.resolveAction(source, target, r);
+    resolveWithResultVisibility(ctx,source,target,r);
     ActionAttackCore.clearCritState(source, target);
   end);
   if not success then

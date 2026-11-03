@@ -2,9 +2,9 @@
 
 <img src="docs/assets/damage-workbench-logo.png" alt="Damage Workbench" width="128" />
 
-Bu kullanım rehberi **v0.3.7** içindir. [Değişiklik günlüğü](CHANGELOG.md).
+Bu kullanım rehberi **v0.3.8** içindir. [Değişiklik günlüğü](CHANGELOG.md).
 
-Yüklenince sohbette **Damage Workbench v0.3.7 loaded.** mesajı görünür.
+Yüklenince sohbette **Damage Workbench v0.3.8 loaded.** mesajı görünür.
 
 ![Damage Workbench v0.3.5 announcement example](docs/screenshots/startup-version.png)
 
@@ -123,7 +123,9 @@ normal spell/effect kontrollerinden yönet.
 
 ## Roll, reroll, Undo ve Apply
 
-**Roll**, zarları atar. Oyuncuların normal atışları ve reroll'ları, **Chat: Show GM rolls** kapalı olsa da diğer oyunculara görünür. DM atışları bu GM ayarına uyar; açıkça gizli/tower atışları gizli kalır. **Chat: Show results to players** (On, Off, Friendly veya Friendly only) native sonuç mesajlarını ayrıca yönetir; oyuncuların fiziksel zarlarını gizlemez. Sonuçlar, ilk zar kutularının altında ayrı kutularda görünür; henüz hasar uygulanmaz.
+**Roll**, zarları atar. Oyuncuların normal atışları ve reroll'ları, **Chat: Show GM rolls** kapalı olsa da diğer oyunculara görünür. DM atışları bu GM ayarına uyar; açıkça gizli/tower atışları gizli kalır. **Chat: Show results to players** (On, Off, Friendly veya Friendly only) hedefe ilişkin native sonuç mesajlarını ayrıca yönetir; oyuncuların fiziksel zarlarını veya DWB toplamlarını gizlemez. Sonuçlar, ilk zar kutularının altında ayrı kutularda görünür; henüz hasar uygulanmaz.
+
+Her kabul edilen Roll veya Reroll sonrasında zarlar ve toplamları sohbette **PENDING APPLY** etiketiyle görünür. Atışı gören herkes toplamı da görür. Zarı atan kendi toplamını her durumda alır: gizli/tower atışları yalnızca DM ve atan oyuncuya gider. Apply sırasında native hasar atışı kartı da aynı kişilere görünür; DM’nin kendi atışlarını gizlemesi oyuncunun toplamını gizlemez. Bu toplam zar sonucudur; hedefin savunmaları alınan gerçek hasarı değiştirebilir.
 
 Bir sonuç zarına çift tıklayıp onaylayarak **reroll** yap. Yeni sonucu kullanman
 gerekir; o zarın eski sonucuna dönemezsin. Onay penceresi, karakterin mevcut

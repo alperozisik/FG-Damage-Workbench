@@ -5,6 +5,13 @@ This log starts with v0.3.5; earlier releases remain in GitHub Releases.
 
 ## [Unreleased]
 
+## [0.3.8] - 2026-11-03
+
+### Fixed
+
+- Roll and Reroll now publish validated dice totals to chat before Apply. Anyone who can see the throw can see its total; the roller always receives their own total, including private throws.
+- Apply's native damage-roll message follows the throw's visibility instead of inheriting the host GM's hidden-roll setting. Unrelated native messages and target-defense policies remain unchanged.
+
 ## [0.3.7] - 2026-11-02
 
 ### Fixed
@@ -43,9 +50,11 @@ This log starts with v0.3.5; earlier releases remain in GitHub Releases.
 - The source archive includes the changelog and current illustrated usage guides.
 - Package builds check that the load-message version matches extension metadata.
 
-[Unreleased]: https://github.com/alperozisik/FG-Damage-Workbench/compare/v0.3.7...HEAD
+[Unreleased]: https://github.com/alperozisik/FG-Damage-Workbench/compare/v0.3.8...HEAD
 [0.3.5]: https://github.com/alperozisik/FG-Damage-Workbench/releases/tag/v0.3.5
 
 [0.3.6]: https://github.com/alperozisik/FG-Damage-Workbench/compare/v0.3.5...v0.3.6
 
 [0.3.7]: https://github.com/alperozisik/FG-Damage-Workbench/compare/v0.3.6...v0.3.7
+
+[0.3.8]: https://github.com/alperozisik/FG-Damage-Workbench/compare/v0.3.7...v0.3.8

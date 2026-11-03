@@ -424,6 +424,7 @@ class ModelTests(unittest.TestCase):
           local messages={};Comm={deliverChatMessage=function(m,u)table.insert(messages,{m=m,u=u})end};
           DWB.auditUndo(ctx);assert(#messages==2 and messages[1].u=='' and messages[2].u=='Alice');
           assert(messages[1].m.secret and messages[1].m.text:find('d6=4',1,true) and messages[1].m.text:find('Total: 7',1,true));
+          assert(messages[2].m.secret==false);
           ctx.owner='';messages={};DWB.auditUndo(ctx);assert(#messages==1 and messages[1].u=='');
         ''')
 
@@ -475,6 +476,7 @@ class ModelTests(unittest.TestCase):
           ActorManager={resolveActor=function(a)return {name=a} end,isPC=function()return true end};
           DWBFeatures={validateClaims=function()return true end,commit=function()end};
           ActionCore={encodeRollClauses=function()end,decodeRollClauses=function()end,encodeDamageTypesDisplay=function()end};
+          Comm={deliverChatMessage=function()end};
           ActionsManager={total=function(r)return r.nMod+r.aDice[1].result end,resolveAction=function(a,b,r)delivered=r end};
           ActionAttackCore={clearCritState=function()end};DB={deleteNode=function()end};DWB.sendView=function()end;
           local ctx={id='test',source='source',target='target',plan=p,label='Sword',state='results'};
@@ -482,6 +484,53 @@ class ModelTests(unittest.TestCase):
           assert(delivered.bModDouble and delivered.sDesc:find('[DOUBLE]',1,true));
           assert(delivered.nTotal==7 and delivered.aDice[1].result==4 and delivered.nMod==3);
           local q=M.new();assert(M.replace(q,M.preset(p,'saved')));assert(not q.doubleDamage);
+        ''')
+
+    def test_roll_and_reroll_totals_follow_throw_audience_and_always_reach_owner(self):
+        self.load_manager()
+        self.run_lua('''
+          local M=DWBModel;local p=M.new('Sword');M.importClauses(p,{{dmgtype='fire',dice={'d6'},modifier=3}});
+          assert(M.recordResults(p,{aDice={{type='d6',result=4}}}));
+          local sent={};Comm={deliverChatMessage=function(m,u)table.insert(sent,{message=m,user=u})end};
+          local ctx={owner='Alice',publicName='Fighter',label='Sword',plan=p,rollSecret=false};
+          DWB.announceRoll(ctx,false);assert(#sent==1 and sent[1].user==nil and sent[1].message.secret==false);
+          assert(sent[1].message.text:find('[PENDING APPLY] Total: 7',1,true));
+          assert(sent[1].message.dice[1].result==4 and sent[1].message.diemodifier==3);
+          assert(M.reroll(p,1,2));DWB.announceRoll(ctx,true);
+          assert(#sent==2 and sent[2].message.text:find('[DWB REROLL]',1,true) and sent[2].message.text:find('Total: 5',1,true));
+          assert(sent[1].message.dice[1].result==4,'old chat result mutated');
+          sent={};ctx.rollSecret=true;DWB.announceRoll(ctx,false);
+          assert(#sent==2 and sent[1].user=='' and sent[1].message.secret==true);
+          assert(sent[2].user=='Alice' and sent[2].message.secret==false and sent[2].message.text:find('Total: 5',1,true));
+          sent={};ctx.owner='';DWB.announceRoll(ctx,false);assert(#sent==1 and sent[1].user=='');
+        ''')
+
+    def test_apply_native_roll_message_visibility_and_callback_cleanup(self):
+        self.load_manager()
+        self.run_lua('''
+          local sent={};local nativeCreate=function(_,r)return {text=r.sDesc,type=r.sType,secret=true,dice=r.aDice}end;
+          local nativeDeliver=function(m,u)table.insert(sent,{message=m,user=u})end;
+          Comm={deliverChatMessage=nativeDeliver};
+          ActionsManager={createActionMessage=nativeCreate,resolveAction=function(a,b,r)
+            local m=ActionsManager.createActionMessage(a,r);m.text=m.text..' native formatting';Comm.deliverChatMessage(m);
+            local other=ActionsManager.createActionMessage(a,{sDesc='unrelated NPC defense',sType='save'});
+            Comm.deliverChatMessage(other);
+          end};
+          local ctx={id='mine',owner='Alice',rollSecret=false};
+          local r={sDWBCommitted='mine',sType='damage',sDesc='Sword',aDice={{type='d6',result=4}}};
+          DWB.resolveWithResultVisibility(ctx,'source','target',r);
+          assert(#sent==2 and sent[1].user==nil and sent[1].message.secret==false);
+          assert(sent[1].message.text=='Sword native formatting' and sent[1].message.dice[1].result==4);
+          assert(sent[2].message.secret==true and sent[2].user==nil);
+          assert(ActionsManager.createActionMessage==nativeCreate and Comm.deliverChatMessage==nativeDeliver);
+          sent={};ctx.rollSecret=true;DWB.resolveWithResultVisibility(ctx,'source','target',r);
+          assert(#sent==3 and sent[1].user=='' and sent[1].message.secret);
+          assert(sent[2].user=='Alice' and sent[2].message.secret==false);
+          sent={};ctx.owner='';DWB.resolveWithResultVisibility(ctx,'source','target',r);
+          assert(#sent==2 and sent[1].user=='' and sent[1].message.secret);
+          ActionsManager.resolveAction=function()error('native handler failure')end;
+          assert(not pcall(DWB.resolveWithResultVisibility,ctx,'source','target',r));
+          assert(ActionsManager.createActionMessage==nativeCreate and Comm.deliverChatMessage==nativeDeliver);
         ''')
 
 if __name__ == '__main__':
