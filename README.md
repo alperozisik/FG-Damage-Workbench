@@ -2,9 +2,9 @@
 
 <img src="docs/assets/damage-workbench-logo.png" alt="Damage Workbench" width="128" />
 
-This usage guide covers **v0.3.8**. [Changelog](CHANGELOG.md).
+This usage guide covers **v0.3.9**. [Changelog](CHANGELOG.md).
 
-On load, chat shows **Damage Workbench v0.3.8 loaded.**
+On load, chat shows **Damage Workbench v0.3.9 loaded.**
 
 ![Damage Workbench v0.3.5 announcement example](docs/screenshots/startup-version.png)
 
@@ -24,7 +24,8 @@ Screenshots show the example panel opened with `/dwb demo`. Appearance follows y
 2. A hit or failed save creates a damage request. With **Ask GM**, the GM resolves
    late modifiers and clicks **Confirm HIT**. **Cancel** dismisses the request.
    With **Automatic**, the panel opens without this confirmation.
-3. Adjust damage, click **Roll**, review the results, then click **Apply Damage**.
+3. Adjust damage and click **Roll**. With **Auto Apply** checked, damage is applied
+   as soon as the dice land. Uncheck it before rolling to review the result first.
 
 The GM chooses **Ask GM** or **Automatic** under **Options → Damage Workbench →
 Confirm hits before damage adjustment**.
@@ -37,6 +38,12 @@ without a selected or drop target follows the classic FG flow.
 
 For save-based cantrips, a successful save normally produces no DWB request.
 Directly using Damage is a separate action; it does not make a new attack or save.
+
+Tracked ranged weapons use the 5E weapon's ammo counter. If the attack already
+spent the shot, including on a miss, the counter keeps that use. If counting
+is deferred to the Workbench, only applying damage spends the shot. Roll and
+Undo leave ammo alone. The GM's confirmation panel shows what Cancel means for
+that shot. Cancel dismisses the damage request and leaves the ammo counter as is.
 
 ## Choose whether to use DWB
 
@@ -124,9 +131,14 @@ through the character's normal spell/effect controls.
 
 ## Roll, reroll, Undo and Apply
 
-**Roll** throws the dice. Ordinary player throws and rerolls are visible to other players, even when **Chat: Show GM rolls** is Off. GM throws still respect that GM setting; explicit secret/tower throws stay private. **Chat: Show results to players** (On, Off, Friendly or Friendly only) continues to govern native target-outcome messages separately; it does not hide physical player dice or their DWB totals. Results appear in separate boxes below the original dice; no damage is applied yet.
+**Auto Apply** starts checked beside **Roll**. Uncheck it if you want to review
+each die, reroll, undo the throw, or use **x2** before applying. Clicking **Roll**
+saves the choice on your computer for this campaign and restores it in the next
+damage panel. The demo always leaves the results open for practice.
 
-After each accepted Roll or Reroll, chat shows the dice and their total, marked **PENDING APPLY**. Anyone who can see the throw can see this total. The roller always receives their own total: secret/tower throws go privately to the GM and the roller. The native damage-roll card on Apply uses the same audience, even when the host hides GM rolls. These totals describe the roll; target defenses can change the damage actually taken.
+**Roll** throws the dice. Ordinary player throws and rerolls are visible to other players, even when **Chat: Show GM rolls** is Off. GM throws still respect that GM setting; explicit secret/tower throws stay private. **Chat: Show results to players** (On, Off, Friendly or Friendly only) continues to govern native target-outcome messages separately. In manual mode, results appear in separate boxes below the original dice until you click **Apply Damage**.
+
+In manual mode, each accepted Roll or Reroll shows the dice and their total in chat with **PENDING APPLY**. When damage is applied automatically or manually, chat shows the native damage-roll card. Anyone who can see the throw can see the total. Secret or tower throws go privately to the GM and the roller. Target defenses can change the damage actually taken.
 
 Double-click a result die and confirm to **reroll** it. You must use the new
 result: you cannot restore that die's previous value. The prompt shows the

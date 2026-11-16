@@ -7,4 +7,8 @@
   <string name="dwb_confirmation">Confirm hits before damage adjustment</string>
   <string name="dwb_ask">Ask GM</string>
   <string name="dwb_auto">Automatic</string>
+  <string name="dwb_autoapply">Auto Apply</string>
+  <string name="dwb_autoapply_tip">Apply damage as soon as the dice land. Uncheck to review results, reroll, or use x2 before applying.</string>
+  <string name="dwb_cancel_ammo_spent">Ammo already spent on the attack. Cancel keeps it spent.</string>
+  <string name="dwb_cancel_ammo_pending">Ammo is counted on Apply. Cancel leaves the ammo count as is.</string>
 </root>

@@ -29,6 +29,8 @@
       <stringcontrol name="status"><bounds>22,-90,-44,20</bounds><font>sheettext</font><static /></stringcontrol>
       <button_text_toggle name="magical"><bounds>300,-65,140,22</bounds><text>Magical</text><script>function onButtonPress() window.toggleMagical(); end</script></button_text_toggle>
       <button_text name="roll"><bounds>300,-35,140,24</bounds><text>Roll</text><script>function onButtonPress() window.rollOrUndo(); end</script></button_text>
+      <buttonc_checkbox name="autoapply"><bounds>186,-35,22,24</bounds><invisible /><tooltip textres="dwb_autoapply_tip" /></buttonc_checkbox>
+      <stringcontrol name="autoapplylabel"><bounds>210,-35,78,24</bounds><font>sheettext</font><static textres="dwb_autoapply" /><invisible /><tooltip textres="dwb_autoapply_tip" /><script>function onClickRelease(button) if button==1 then window.toggleAutoApply(); return true; end end</script></stringcontrol>
       <button_text name="save"><bounds>452,-35,70,24</bounds><text>Save</text><script>function onButtonPress() window.savePreset(); end</script></button_text>
       <button_text name="apply"><bounds>300,-35,180,24</bounds><text>Apply Damage</text><invisible /><script>function onButtonPress() window.applyDamage(); end</script></button_text>
       <button_text_toggle name="double"><bounds>246,-35,44,24</bounds><text>x2</text><invisible /><tooltip text="Double damage on Apply" /><script>function onButtonPress() window.toggleDouble(); end</script></button_text_toggle>
@@ -106,10 +108,11 @@
   </windowclass>
   <windowclass name="dwb_approval">
     <sizelimits><minimum height="80" /></sizelimits>
-    <script>local id; function setData(ctx) id=ctx.id; label.setValue(ctx.publicName .. " / " .. ctx.label); end
+    <script>local id; function setData(ctx) id=ctx.id; label.setValue(ctx.publicName .. " / " .. ctx.label); ammo_notice.setValue(DWB.approvalAmmoNotice(ctx)); end
       function confirm() DWB.approve(id); end function reject() DWB.reject(id); end</script>
     <sheetdata>
       <stringcontrol name="label"><bounds>0,0,-2,22</bounds><font>sheetlabel</font><static /></stringcontrol>
+      <stringcontrol name="ammo_notice"><bounds>0,21,-2,18</bounds><font>sheettext</font><static /></stringcontrol>
       <button_text name="yes"><anchored width="130" height="24"><top offset="40" /><left anchor="center" offset="-123" /></anchored><text>Confirm HIT</text><script>function onButtonPress() window.confirm(); end</script></button_text>
       <button_text name="no"><anchored width="100" height="24"><top offset="40" /><left anchor="center" offset="23" /></anchored><text>Cancel</text><script>function onButtonPress() window.reject(); end</script></button_text>
     </sheetdata>

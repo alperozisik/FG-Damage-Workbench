@@ -2,9 +2,9 @@
 
 <img src="docs/assets/damage-workbench-logo.png" alt="Damage Workbench" width="128" />
 
-Bu kullanım rehberi **v0.3.8** içindir. [Değişiklik günlüğü](CHANGELOG.md).
+Bu kullanım rehberi **v0.3.9** içindir. [Değişiklik günlüğü](CHANGELOG.md).
 
-Yüklenince sohbette **Damage Workbench v0.3.8 loaded.** mesajı görünür.
+Yüklenince sohbette **Damage Workbench v0.3.9 loaded.** mesajı görünür.
 
 ![Damage Workbench v0.3.5 announcement example](docs/screenshots/startup-version.png)
 
@@ -24,7 +24,14 @@ Görüntüler `/dwb demo` ile açılan örnek panelden alınmıştır. Görünü
 2. İsabet veya başarısız kurtarma bir hasar isteği oluşturur. **Ask GM** modunda
    GM son değiştiricileri çözüp **Confirm HIT** düğmesine basar. **Cancel** isteği
    kapatır. **Automatic** modunda panel bu onay beklenmeden açılır.
-3. Hasarı düzenle, **Roll** ile at, sonuçları incele ve **Apply Damage** ile uygula.
+3. Hasarı düzenle ve **Roll** ile at. **Auto Apply** işaretliyse zarlar durduğunda
+   hasar uygulanır. Sonucu önce incelemek için atıştan önce işareti kaldır.
+
+Takip açık olan menzilli silahlarda Fantasy Grounds'un silah mühimmatı sayacı
+kullanılır. Normal saldırıda mühimmat, ıskalasana da, Attack sırasında harcanır.
+Sayım Workbench'e kaldıysa mühimmat hasar uygulanırken harcanır. Roll ve Undo
+sayacı değiştirmez. GM onay panelindeki not, o saldırıda Cancel'ın etkisini
+gösterir. Cancel hasar isteğini kapatır ve sayacı olduğu gibi bırakır.
 
 GM, **Options → Damage Workbench → Confirm hits before damage adjustment**
 ayarından **Ask GM** veya **Automatic** seçer.
@@ -123,9 +130,14 @@ normal spell/effect kontrollerinden yönet.
 
 ## Roll, reroll, Undo ve Apply
 
-**Roll**, zarları atar. Oyuncuların normal atışları ve reroll'ları, **Chat: Show GM rolls** kapalı olsa da diğer oyunculara görünür. DM atışları bu GM ayarına uyar; açıkça gizli/tower atışları gizli kalır. **Chat: Show results to players** (On, Off, Friendly veya Friendly only) hedefe ilişkin native sonuç mesajlarını ayrıca yönetir; oyuncuların fiziksel zarlarını veya DWB toplamlarını gizlemez. Sonuçlar, ilk zar kutularının altında ayrı kutularda görünür; henüz hasar uygulanmaz.
+**Auto Apply**, **Roll** düğmesinin yanında işaretli başlar. Zarları incelemek,
+yeniden atmak, atışı geri almak veya **x2** kullanmak istiyorsan işareti kaldır.
+**Roll** düğmesine basınca tercih bu kampanya için kendi bilgisayarında kaydedilir
+ve sonraki hasar panelinde hatırlanır. Demo paneli, deneme yapabilmen için sonuçları açık bırakır.
 
-Her kabul edilen Roll veya Reroll sonrasında zarlar ve toplamları sohbette **PENDING APPLY** etiketiyle görünür. Atışı gören herkes toplamı da görür. Zarı atan kendi toplamını her durumda alır: gizli/tower atışları yalnızca DM ve atan oyuncuya gider. Apply sırasında native hasar atışı kartı da aynı kişilere görünür; DM’nin kendi atışlarını gizlemesi oyuncunun toplamını gizlemez. Bu toplam zar sonucudur; hedefin savunmaları alınan gerçek hasarı değiştirebilir.
+**Roll**, zarları atar. Oyuncuların normal atışları ve reroll'ları **Chat: Show GM rolls** kapalı olsa da diğer oyunculara görünür. DM atışları bu ayara uyar. **Chat: Show results to players** (On, Off, Friendly veya Friendly only) hedefe ilişkin sonuç mesajlarını ayrıca yönetir. Elle uygulama modunda sonuçlar, ilk zar kutularının altında **Apply Damage** düğmesine basana kadar görünür.
+
+Elle uygulama modunda her kabul edilen Roll veya Reroll sonrasında zarlar ve toplamları sohbette **PENDING APPLY** etiketiyle görünür. Hasar otomatik veya elle uygulandığında Fantasy Grounds'un hasar atışı kartı sohbette görünür. Atışı gören herkes toplamı da görür. Gizli ve tower atışlarında toplamı DM ile zarı atan oyuncu görür. Hedefin savunmaları alınan gerçek hasarı değiştirebilir.
 
 Bir sonuç zarına çift tıklayıp onaylayarak **reroll** yap. Yeni sonucu kullanman
 gerekir; o zarın eski sonucuna dönemezsin. Onay penceresi, karakterin mevcut

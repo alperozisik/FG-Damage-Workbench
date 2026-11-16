@@ -21,7 +21,10 @@ function isEditing() return editing; end
 function setBusy(value) busy = value; refresh(); end
 
 function setPlan(p)
-  if not plan or plan.id~=p.id then editing=false; end
+  if not plan or plan.id~=p.id then
+    editing=false;
+    autoapply.setValue(DWBPreferences.autoApply() and 1 or 0);
+  end
   plan = p; busy = p.phase == "rolling" or p.phase == "rerolling";
   clearSelection();
   if previousPhase ~= p.phase then
@@ -68,6 +71,12 @@ function toggleDouble()
   if not plan or busy or plan.phase~="results" then return; end
   if plan.id=="demo" then plan.doubleDamage=not plan.doubleDamage; refresh();
   else busy=true; refresh(); DWB.command(plan.id,"double",{enabled=not plan.doubleDamage}); end
+end
+
+function toggleAutoApply()
+  if plan and plan.id~="demo" and plan.phase=="edit" and not busy then
+    autoapply.setValue(autoapply.getValue()==1 and 0 or 1);
+  end
 end
 
 function refreshSelection()
@@ -215,6 +224,11 @@ function refresh()
   local center=math.floor(width/2);
   magical.setStaticBounds(center-70,height-100,140,22); magical.setVisible(not results);
   roll.setStaticBounds(center-70,results and vertical.undo or height-64,140,24);
+  autoapply.setStaticBounds(center-184,height-64,22,24);
+  autoapplylabel.setStaticBounds(center-160,height-64,78,24);
+  local showAutoApply=not results and plan.id~="demo";
+  autoapply.setVisible(showAutoApply); autoapply.setEnabled(canEdit);
+  autoapplylabel.setVisible(showAutoApply);
   save.setStaticBounds(center+116,height-64,70,24); save.setVisible(canEdit or results); save.setEnabled(not busy);
   apply.setVisible(results); apply.setEnabled(results and not busy and plan.id~="demo");
   double.setVisible(results); double.setEnabled(results and not busy);
@@ -234,7 +248,12 @@ function rollOrUndo()
     if plan.id == "demo" then DWBModel.undo(plan); setPlan(plan); else DWB.command(plan.id, "undo"); end
   elseif plan.phase == "edit" and DWBModel.valid(plan) then
     busy = true; refresh();
-    if plan.id == "demo" then DWB.demoRoll(plan); else DWB.command(plan.id, "roll", plan); end
+    if plan.id == "demo" then DWB.demoRoll(plan);
+    else
+      local auto=autoapply.getValue()==1;
+      DWBPreferences.saveAutoApply(auto);
+      DWB.command(plan.id,"roll",{plan=plan,autoApply=auto});
+    end
   end
 end
 

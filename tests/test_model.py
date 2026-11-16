@@ -486,6 +486,131 @@ class ModelTests(unittest.TestCase):
           local q=M.new();assert(M.replace(q,M.preset(p,'saved')));assert(not q.doubleDamage);
         ''')
 
+    def test_critical_preview_imports_base_sneak_attack_dice_once(self):
+        self.load_manager()
+        self.run_lua('''
+          ActorManager={resolveActor=function(a)return {name=a}end};
+          ActionDamageD20={getRoll=function(_,a)return a end};
+          ActionCore={decodeRollClauses=function()end};
+          ActionAttackCore={getCritState=function()return 'native' end};
+          EffectManager={applyEffectExpiration=function()end};
+          DWBFeatures={rerollCount=function()return 0 end};
+          local sneak=function(r)
+            local dice={'d6','d6'};
+            if r.bCritical then dice={'d6','d6','d6','d6'} end
+            table.insert(r.clauses,{dmgtype='piercing',dice=dice});
+          end;
+          ActionDamageDnDBCE={applyModSneakDmgEffectsBonus=sneak};
+          ActionsManager={applyModifiers=function(source,target,r)
+            assert(ActionAttackCore.getCritState()==r.bCritical);
+            if r.bCritical then
+              table.insert(r.clauses,{dmgtype='piercing,critical',dice={'d8'},bCritical=true});
+            end
+            ActionDamageDnDBCE.applyModSneakDmgEffectsBonus(r);
+          end};
+          local ctx={source='source',target='target',label='Longbow',critical=true,
+            action={clauses={{dmgtype='piercing',dice={'d8'},modifier=6}}}};
+          local p=DWB.prepare(ctx);
+          assert(p.critical and DWBModel.countDice(p)==3);
+          local rolled=DWBModel.buildRoll(p);
+          assert(#rolled.aDice==6 and rolled.nMod==6);
+          assert(ActionDamageDnDBCE.applyModSneakDmgEffectsBonus==sneak);
+          ctx.critical=false;
+          p=DWB.prepare(ctx); assert(not p.critical and #DWBModel.buildRoll(p).aDice==3);
+          ctx.critical=true;
+          local prior=EffectManager.applyEffectExpiration;
+          ActionsManager.applyModifiers=function() error('modifier failure') end;
+          assert(not pcall(DWB.prepare,ctx));
+          assert(ActionDamageDnDBCE.applyModSneakDmgEffectsBonus==sneak);
+          assert(EffectManager.applyEffectExpiration==prior and ActionAttackCore.getCritState()=='native');
+        ''')
+
+    def test_auto_apply_preference_defaults_on_and_writes_only_changes(self):
+        self.run_lua('DWBPreferences={}; setmetatable(DWBPreferences,{__index=_G});')
+        self.lua.globals().loadModule((ROOT / "scripts/preferences.lua").read_text(), self.lua.globals().DWBPreferences)
+        self.run_lua('''
+          local storage,writes={},0;
+          CampaignRegistry=setmetatable({},{
+            __index=storage, __newindex=function(_,key,value) writes=writes+1;storage[key]=value end
+          });
+          local P=DWBPreferences;
+          assert(P.autoApply());
+          P.saveAutoApply(true); assert(writes==0);
+          P.saveAutoApply(false); assert(not P.autoApply() and writes==1);
+          P.saveAutoApply(false); assert(writes==1);
+          P.saveAutoApply(true); assert(P.autoApply() and writes==2);
+        ''')
+
+    def test_validated_roll_applies_once_and_ranged_ammo_is_per_shot(self):
+        self.load_manager()
+        self.run_lua('''
+          local M=DWBModel;
+          local weapon='pc.weaponlist.bow';
+          local ammo,damage,announcements,thirdParty=0,0,0,false;
+          Session={IsHost=true};
+          DB={getPath=function(n)return n end,findNode=function(n)return n end,deleteNode=function()end,
+            getValue=function(_,key,default)if key=='ammo' then return ammo end return default end};
+          ActorManager={resolveActor=function(a)return {name=a}end,isPC=function()return true end,
+            getCreatureNodeName=function(a)return a end,getCTNodeName=function(a)return a end,
+            getDisplayName=function(a)return a end};
+          DWBPreferences={enabled=function()return true end,owner=function()return 'Rogue' end};
+          DWBFeatures={presentFeatures=function()return {}end,pruneClaims=function()end,
+            validateClaims=function()return true end,commit=function()end};
+          CharWeaponManager={decrementAmmo=function(_,n)assert(n==weapon);ammo=ammo+1 end};
+          OptionsManager={isOption=function()return false end};
+          Utility={decodeJSON=function(p)return p end};
+          Interface={findWindow=function()end,openWindow=function()end,getString=function(key)return key end};
+          ActionCore={encodeRollClauses=function()end,decodeRollClauses=function()end,encodeDamageTypesDisplay=function()end};
+          ActionAttackCore={clearCritState=function()end};
+          Comm={deliverChatMessage=function()end};
+          ActionsManager={total=function(r)return r.nMod+r.aDice[1].result end,resolveAction=function(_,_,r)
+            assert(r.weaponPath==weapon and r.sLabel=='Longbow');
+            damage=damage+1;
+            if thirdParty then ammo=ammo+1 end
+          end};
+          DWB.damageAction=function()return {label='Longbow'},{weapon=true,range='R'}end;
+          DWB.sendView=function()end;
+          DWB.announceRoll=function()announcements=announcements+1 end;
+          DWB.sendRoll=function()end;
+          local function open(shot,target,before,alreadySpent)
+            DWB.queue('pc',target,{sDWBPath=weapon,sDWBAmmoId=shot,nDWBAmmoBefore=before,bDWBAmmoSpent=alreadySpent},false);
+            local ctx=assert(DWB.approvals()[1]); ctx.state='edit';
+            ctx.plan=M.new(); assert(M.importClauses(ctx.plan,{{dmgtype='piercing',dice={'d8'},modifier=3}}));
+            return ctx;
+          end
+          local function roll(ctx,auto,result)
+            DWB.receiveCommand({id=ctx.id,op='roll',payload={plan=ctx.plan,autoApply=auto}});
+            local landing={id=ctx.id,op='landed',payload={nonce=ctx.nonce,aDice={{type='d8',result=result}}}};
+            DWB.receiveCommand(landing);DWB.receiveCommand(landing);
+          end
+          local a,b=open('first','a',0),open('first','b',0);
+          assert(DWB.approvalAmmoNotice(a)=='dwb_cancel_ammo_pending');
+          roll(a,true,4); assert(a.state=='applied' and damage==1 and ammo==1 and announcements==0);
+          assert(DWB.approvalAmmoNotice(b)=='dwb_cancel_ammo_spent');
+          roll(b,false,5); assert(b.state=='results' and damage==1 and ammo==1 and announcements==1);
+          DWB.receiveCommand({id=b.id,op='apply'});assert(damage==2 and ammo==1);
+          local c=open('native-counted','c',0);
+          assert(DWB.approvalAmmoNotice(c)=='dwb_cancel_ammo_spent');
+          roll(c,true,4);assert(damage==3 and ammo==1);
+          local d=open('invalid','d',1);
+          DWB.tell=function()end;
+          roll(d,true,500);assert(d.state=='edit' and damage==3 and ammo==1);
+          thirdParty=true;
+          local e=open('extension-counted','e',1);
+          roll(e,true,4);assert(damage==4 and ammo==2);
+          thirdParty=false;
+          local f=open('undo','f',2);
+          roll(f,false,4); DWB.receiveCommand({id=f.id,op='undo'});
+          assert(f.state=='edit' and damage==4 and ammo==2);
+          local cancelled=open(nil,'already-spent',nil,true);
+          assert(DWB.approvalAmmoNotice(cancelled)=='dwb_cancel_ammo_spent');
+          DWB.reject(cancelled.id);
+          local deferred=open('deferred','not-spent',2);
+          assert(DWB.approvalAmmoNotice(deferred)=='dwb_cancel_ammo_pending');
+          DWB.reject(deferred.id);
+          assert(ammo==2 and damage==4);
+        ''')
+
     def test_roll_and_reroll_totals_follow_throw_audience_and_always_reach_owner(self):
         self.load_manager()
         self.run_lua('''

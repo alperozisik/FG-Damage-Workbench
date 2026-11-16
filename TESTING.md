@@ -1,7 +1,43 @@
-# Verification record — 2026-11-03
+# Verification record — 2026-11-17
 
-This record covers version 0.3.8 and retains earlier verification history. The tables distinguish executed tests from
+This record covers v0.3.9 and retains earlier verification history. The tables distinguish executed tests from
 items that still require acceptance testing. Tests use a separate local sandbox.
+
+## 0.3.9 Auto Apply, ammunition and critical Sneak Attack
+
+All 30 automated tests passed. The new tests cover the default and change-only
+client preference, auto and manual Apply, repeated landing messages, invalid
+results, Undo, and one ammo count per shot when one attack has multiple targets.
+They also cover ammo already counted by the attack or damage handler and the
+restoration of critical preview callbacks after an error.
+
+A separate Lua integration check used the installed CoreRPG critical routine,
+Better Combat Effects Gold's Sneak Attack routine, and the 5E ammunition
+routine. A longbow with 2d6 Sneak Attack produced 2d8 + 4d6 on a critical and
+retained its fixed bonus and effect die color. The native ammo routine advanced
+the weapon counter and warned when it reached capacity. These checks simulated
+the FG runtime.
+
+A live Fantasy Grounds 5.1.15 host and player connected over localhost in the
+sandbox. GM confirmation opened the panel on the character owner's client.
+The first longbow shot opened with Auto Apply checked, applied 10 damage after
+Roll, and displayed the same total in GM and player chat. On a natural 20,
+the player unchecked Auto Apply. The result waited for manual Apply and showed
+two d8s plus one fixed +6 for a total of 20 in both chats. The next panel opened
+with the box still unchecked during the same connection. The sandbox target's
+wounds increased from 427 to 457 after the two damage applications.
+
+The weapon's used-ammo counter advanced once on each of three attack rolls,
+including the shot with no damage applied, and did not advance again on Apply.
+The two inventory arrow stacks remained unchanged at 20 and 134. The sandbox
+loaded Table Tools Portal, which handles map portals. The inventory-backed
+ammunition component was not exercised. The live critical test used the
+weapon's dice only; the BCE Gold Sneak Attack check above used the Lua runtime.
+
+The follow-up Cancel notice passed automated checks for ammo already spent,
+ammo counted by another target of the same shot, and ammo deferred to Apply.
+Cancel left damage and the ammo count unchanged in both cancel cases. The new
+notice has not been checked visually in Fantasy Grounds.
 
 ## 0.3.8 roll totals and Apply audience
 

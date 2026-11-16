@@ -20,6 +20,10 @@ function onClose()
   if Session.IsHost then User.removeEventHandler("onLogin",login); end
 end
 function localEnabled() return OptionsManager.isOption("DWB_ENABLED","on"); end
+function autoApply() return CampaignRegistry.DWB_AUTO_APPLY ~= "off"; end
+function saveAutoApply(enabled)
+  if autoApply() ~= enabled then CampaignRegistry.DWB_AUTO_APPLY = enabled and "on" or "off"; end
+end
 function owner(actor)
   local user=DB.getOwner(ActorManager.getCreatureNode(actor)) or "";
   for _,online in ipairs(User.getActiveUsers()) do if online==user then return user; end end

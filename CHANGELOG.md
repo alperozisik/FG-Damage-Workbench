@@ -5,6 +5,18 @@ This log starts with v0.3.5; earlier releases remain in GitHub Releases.
 
 ## [Unreleased]
 
+## [0.3.9] - 2026-11-17
+
+### Added
+
+- Auto Apply beside Roll applies validated damage as soon as the dice land. It starts enabled and remembers each user's last choice locally for the campaign.
+- Confirm Hit shows whether Cancel leaves already-spent ammo spent or dismisses the request before the Workbench counts ammo.
+
+### Fixed
+
+- Confirmed ranged damage advances the native weapon ammo tracker once per shot if the attack or damage handler did not advance it.
+- Critical damage doubles Better Combat Effects Gold's Sneak Attack dice once.
+
 ## [0.3.8] - 2026-11-03
 
 ### Fixed
@@ -50,7 +62,7 @@ This log starts with v0.3.5; earlier releases remain in GitHub Releases.
 - The source archive includes the changelog and current illustrated usage guides.
 - Package builds check that the load-message version matches extension metadata.
 
-[Unreleased]: https://github.com/alperozisik/FG-Damage-Workbench/compare/v0.3.8...HEAD
+[Unreleased]: https://github.com/alperozisik/FG-Damage-Workbench/compare/v0.3.9...HEAD
 [0.3.5]: https://github.com/alperozisik/FG-Damage-Workbench/releases/tag/v0.3.5
 
 [0.3.6]: https://github.com/alperozisik/FG-Damage-Workbench/compare/v0.3.5...v0.3.6
@@ -58,3 +70,5 @@ This log starts with v0.3.5; earlier releases remain in GitHub Releases.
 [0.3.7]: https://github.com/alperozisik/FG-Damage-Workbench/compare/v0.3.6...v0.3.7
 
 [0.3.8]: https://github.com/alperozisik/FG-Damage-Workbench/compare/v0.3.7...v0.3.8
+
+[0.3.9]: https://github.com/alperozisik/FG-Damage-Workbench/compare/v0.3.8...v0.3.9

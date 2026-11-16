@@ -5,6 +5,7 @@ local counter = 0;
 local oldAttack, oldSave, oldWeapon, oldPower, oldPostGet;
 local previewing = false;
 local rolling = {};
+local spentAmmo = {};
 
 function onInit()
   ToolbarManager.registerButton("dwb_edit", {
@@ -46,13 +47,27 @@ function onInit()
   oldWeapon = CharWeaponManager.buildAttackAction;
   CharWeaponManager.buildAttackAction = function(actor, node)
     local action = oldWeapon(actor, node);
-    if action then action.sDWBPath = DB.getPath(node); end
+    if action then
+      action.sDWBPath = DB.getPath(node);
+      if action.range=="R" then
+        local used=DB.getValue(node,"ammo",0);
+        if used<DB.getValue(node,"maxammo",0) then action.nDWBAmmoBefore=used; end
+      end
+    end
     return action;
   end;
   local oldAttackRoll = ActionAttack.getRoll;
   ActionAttack.getRoll = function(actor, action)
     local roll = oldAttackRoll(actor, action);
-    if action then roll.sDWBPath = action.sDWBPath or action.weaponPath; end
+    if action then
+      roll.sDWBPath = action.sDWBPath or action.weaponPath;
+      local before=action.nDWBAmmoBefore;
+      if before~=nil then
+        local used=DB.getValue(action.sDWBPath,"ammo",0);
+        if used>before then roll.bDWBAmmoSpent=true;
+        elseif used==before then roll.sDWBAmmoId=newId(); roll.nDWBAmmoBefore=before; end
+      end
+    end
     return roll;
   end;
   local oldEffectRoll=ActionEffect.getRoll;
@@ -229,6 +244,14 @@ function queue(source, target, roll, save, direct)
   ctx.owner = owner;
   ctx.action = action; ctx.critical = roll.sResult == "crit"; ctx.state = "approval";
   ctx.actionPath=DB.getPath(node);
+  if ctx.weapon and ctx.range=="R" and roll.sDWBPath==ctx.actionPath then
+    ctx.ammoSpent=roll.bDWBAmmoSpent==true;
+    if roll.sDWBAmmoId then
+      local used=DB.getValue(node,"ammo",0);
+      if roll.nDWBAmmoBefore==used then ctx.ammoId=roll.sDWBAmmoId;
+      elseif type(roll.nDWBAmmoBefore)=="number" and used>roll.nDWBAmmoBefore then ctx.ammoSpent=true; end
+    end
+  end
   ctx.advantage = roll.bADV or (roll.sDesc or ""):match("%[ADV%]") ~= nil;
   ctx.disadvantage = roll.bDIS or (roll.sDesc or ""):match("%[DIS%]") ~= nil;
   ctx.label = action.label or "Damage";
@@ -265,6 +288,14 @@ function reject(id)
   pending[id] = nil; showApprovals();
 end
 
+function approvalAmmoNotice(ctx)
+  if ctx.ammoSpent or (ctx.ammoId and spentAmmo[ctx.ammoId]) then
+    return Interface.getString("dwb_cancel_ammo_spent");
+  end
+  if ctx.ammoId then return Interface.getString("dwb_cancel_ammo_pending"); end
+  return "";
+end
+
 function prepare(ctx)
   local source, target = ActorManager.resolveActor(ctx.source), ActorManager.resolveActor(ctx.target);
   if (ctx.itemPath or "") ~= "" then source.itemPath = ctx.itemPath; end
@@ -273,6 +304,8 @@ function prepare(ctx)
   local expires = {};
   local original = EffectManager.applyEffectExpiration;
   local originalCrit = ActionAttackCore.getCritState;
+  local sneakManager=ActionDamageDnDBCE;
+  local originalSneak=sneakManager and sneakManager.applyModSneakDmgEffectsBonus;
   if previewing then error("Nested effect preview is not supported"); end
   previewing = true;
   -- Preview must not consume the native per-target critical token.
@@ -284,7 +317,20 @@ function prepare(ctx)
         apply = DB.getValue(node, "apply", "") });
     end
   end;
+  -- BCE doubles Sneak Attack inside one untagged clause. Import its base
+  -- dice so the plan can double them once alongside the weapon dice.
+  if originalSneak then
+    sneakManager.applyModSneakDmgEffectsBonus=function(r,...)
+      if r~=roll then return originalSneak(r,...); end
+      local critical=r.bCritical;
+      r.bCritical=false;
+      local ok,err=pcall(originalSneak,r,...);
+      r.bCritical=critical;
+      if not ok then error(err); end
+    end;
+  end
   local ok, err = pcall(function() ActionsManager.applyModifiers(source, target, roll, true); end);
+  if originalSneak then sneakManager.applyModSneakDmgEffectsBonus=originalSneak; end
   EffectManager.applyEffectExpiration = original;
   ActionAttackCore.getCritState = originalCrit;
   previewing = false;
@@ -377,6 +423,8 @@ function receiveCommand(msg)
     plan.id=ctx.id; plan.source=ctx.source; plan.label=ctx.label; plan.flags=DWBModel.copy(ctx.plan.flags);
     ctx.plan=plan; sendView(ctx);
   elseif op == "roll" and ctx.state == "edit" then
+    local autoApply=data.autoApply==true and type(data.plan)=="table";
+    data=data.plan or data;
     local ok, err = DWBModel.valid(data);
     if not ok then refuse(ctx, err); return; end
     data.phase = "edit"; data.id = ctx.id; data.label = ctx.label; data.rerolls = 0;
@@ -398,6 +446,7 @@ function receiveCommand(msg)
     if ok then ok, err = checkExpirations(ctx); end
     if not ok then refuse(ctx, err); return; end
     ctx.plan = data;
+    ctx.autoApply=autoApply;
     ctx.expected = DWBModel.buildRoll(data);
     ctx.nonce = newId(); ctx.state = "rolling";
     sendRoll(ctx, ctx.expected, false);
@@ -420,7 +469,14 @@ function receiveCommand(msg)
       if ok then ctx.plan.turnRerolls = DWBFeatures.countReroll(ctx); end
     end
     if not ok then ctx.state = "edit"; ctx.plan.phase = "edit"; tell(err or "Invalid dice result; damage was not applied");
-    else ctx.state = "results"; announceRoll(ctx,reroll); end
+    else
+      ctx.state = "results";
+      if not reroll and ctx.autoApply then
+        ctx.autoApply=false;
+        if apply(ctx) then return; end
+      end
+      if ctx.state=="results" then announceRoll(ctx,reroll); end
+    end
     sendView(ctx);
   elseif op == "undo" and ctx.state == "results" then
     auditUndo(ctx);
@@ -590,6 +646,8 @@ function apply(ctx)
   if r.bModHalf then r.sDesc = r.sDesc .. " [HALF]"; end
   if r.bModDouble then r.sDesc = r.sDesc .. " [DOUBLE]"; end
   r.bCritical = ctx.plan.critical; r.bWeapon = ctx.weapon; r.bSpell = ctx.cantrip;
+  r.sLabel=ctx.prepared and ctx.prepared.sLabel or ctx.label;
+  if ctx.weapon then r.weaponPath=ctx.actionPath; end
   r.sRange = ctx.range; r.nTotal = DWBModel.total(ctx.plan);
   r.mapping = nil; r.sDWBCommitted = ctx.id;
   -- These values have already been accepted (including explicit rerolls/min/max).
@@ -617,8 +675,14 @@ function apply(ctx)
       end
     end
     DWBFeatures.commit(ctx, ctx.plan);
+    local weapon=ctx.ammoId and not spentAmmo[ctx.ammoId] and DB.findNode(ctx.actionPath);
+    local used=weapon and DB.getValue(weapon,"ammo",0);
     target.nOrder = 1;
     resolveWithResultVisibility(ctx,source,target,r);
+    if weapon then
+      spentAmmo[ctx.ammoId]=true;
+      if DB.getValue(weapon,"ammo",0)==used then CharWeaponManager.decrementAmmo(source,weapon); end
+    end
     ActionAttackCore.clearCritState(source, target);
   end);
   if not success then
@@ -629,6 +693,7 @@ function apply(ctx)
   ctx.state = "applied"; ctx.plan.phase = "applied"; sendView(ctx);
   DB.deleteNode(linkPath(ctx.id));
   pending[ctx.id] = nil;
+  return true;
 end
 
 function view(id)
