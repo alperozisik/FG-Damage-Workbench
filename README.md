@@ -1,8 +1,8 @@
 # Damage Workbench
 
-[Forum and support](https://www.fantasygrounds.com/forums/showthread.php?88612) · [Forge — pending approval](https://forge.fantasygrounds.com/shop/items/3793/view)
+[Forum and support](https://www.fantasygrounds.com/forums/showthread.php?88612) · [Forge — Live](https://forge.fantasygrounds.com/shop/items/3793/view)
 
-As of **2026-11-20**, the forum thread is published. The free Forge item is pending approval/review and its v0.3.11 build is **QUEUED FOR PROCESSING**, not Live. GitHub downloads remain available; Forge Updater delivery is not yet verified.
+As of **2026-11-20**, the free Forge item is approved, **ACTIVE/listed**, and v0.3.11 **build #1 is on Live**, as verified by the publication coordinator. The forum thread is published. An independent end-to-end Forge Updater download has not been tested.
 
 <img src="docs/assets/damage-workbench-logo.png" alt="Damage Workbench" width="128" />
 
