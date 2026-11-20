@@ -2,20 +2,29 @@
 
 <img src="docs/assets/damage-workbench-logo.png" alt="Damage Workbench" width="128" />
 
-Bu kullanım rehberi **v0.3.9** içindir. [Değişiklik günlüğü](CHANGELOG.md).
+Bu kullanım rehberi **v0.3.10** içindir. [Değişiklik günlüğü](CHANGELOG.md).
 
-Yüklenince sohbette **Damage Workbench v0.3.9 loaded.** mesajı görünür.
+Yüklenince sohbette **Damage Workbench v0.3.10 loaded.** mesajı görünür.
 
-![Damage Workbench v0.3.5 announcement example](docs/screenshots/startup-version.png)
+![Damage Workbench v0.3.10 yüklenme duyurusu](docs/screenshots/startup-version.png)
 
 Fantasy Grounds Unity 5E'de silah ve cantrip hasarını incele, zarları düzenle,
 zarları at ve hazır olduğunda sonucu uygula.
 
 [English guide](README.md) · [MIT Lisansı](LICENSE)
 
-![Kilitli hasar hazırlama paneli](docs/screenshots/damage-setup.png)
+Test edilen temel ortam: **FG Unity 5.1.15**, **CoreRPG/5E 2026-10-06**. Daha eski
+sürümler desteklenen temel ortam değildir. DWB native 5E aksiyon kayıtlarını kullanır;
+2014/2024 sınıf özelliklerinin ayrı ve kapsamlı doğrulaması iddia edilmez. İstek akışı
+**PC silahları ve cantripler** içindir; genel seviyeli büyü veya NPC saldırısı yakalama
+kapsam dışıdır. Envanter ok yığınlarını azaltan ek extension entegrasyonları doğrulanmamıştır.
+[Güncel kontroller ve sınırlar](TESTING.md#current-acceptance-summary).
 
-Görüntüler `/dwb demo` ile açılan örnek panelden alınmıştır. Görünüm, aktif FG temasına göre değişir.
+[Forge açıklaması ve dağıtım bilgileri (İngilizce)](docs/forge/description.md).
+
+![Auto Apply açık hedefli hasar paneli](docs/forge/images/damage-auto-apply.png)
+
+Güncel hedefli görüntüler sandbox içindeki sentetik Demo Archer kaydını kullanır. Eski demo örnekleri aşağıda ayrıca belirtilir. Görünüm aktif FG temasına göre değişir.
 
 ## Hasar panelini aç
 
@@ -152,9 +161,9 @@ zarları seçtiysen hasarı yeniden hazırlamak için kullan. Turun reroll sayac
 Panel ham hasarı gösterir; resistance, immunity ve diğer hedef savunmaları alınan
 gerçek hasarı azaltabilir. Apply sonrasında bekleyen DWB isteği sona erer.
 
-![Ayrı kutularda kritik ve normal atış sonuçları, Undo ve Save](docs/screenshots/damage-results.png)
+![Kritik sonuçlar, x2, Undo ve Save](docs/forge/images/damage-results-x2.png)
 
-Üstte hazırlanan zarlar, altta sonuçlar görünür. Bu örnek hedefsiz demodur: **Apply** kapalıdır ve hiçbir hedef hasar almaz.
+Üstte hazırlanan zarlar, altta sonuçlar görünür. Bu sentetik hedefli örnekte ham toplam 20'dir; **x2**, zarları değiştirmeden Apply değerini 40 yapar.
 
 ## Paneli kapat ve yeniden aç
 

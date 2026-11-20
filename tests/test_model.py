@@ -525,6 +525,38 @@ class ModelTests(unittest.TestCase):
           assert(EffectManager.applyEffectExpiration==prior and ActionAttackCore.getCritState()=='native');
         ''')
 
+    def test_native_attack_transport_accepts_text_ammo_metadata(self):
+        self.load_manager()
+        self.run_lua('''
+          Session={IsHost=false};
+          ToolbarManager={registerButton=function()end};
+          DB={getValue=function(path,default)
+            assert(path=='pc.weaponlist.bow.ammo' and default==0,
+              'Use the full value path, not the node/field overload with a string');
+            return 1;
+          end};
+          OptionsManager={registerOptionData=function()end};
+          GameManager={addAction=function()end,addEventFunction=function()end,
+            getMultiKeyFunction=function()end,setMultiKeyFunction=function()end};
+          ActionsManager={registerResultHandler=function()end};
+          OOBManager={registerOOBMsgHandler=function()end};
+          Interface={addKeyedEventHandler=function()end};
+          Comm={registerSlashHandler=function()end};
+          ActionAttack={applyAttack=function()end,getRoll=function()return {}end};
+          ActionSave={applySave=function()end};
+          CharWeaponManager={buildAttackAction=function()return {}end};
+          ActionEffect={getRoll=function()return {}end};
+          PowerManager={getPowerAction=function()return {}end};
+          ActionPowerSave={getRoll=function()return {}end};
+          DWB.onInit();
+          local spent=ActionAttack.getRoll(nil,{sDWBPath='pc.weaponlist.bow',nDWBAmmoBefore='0'});
+          assert(spent.bDWBAmmoSpent and not spent.sDWBAmmoId);
+          local pending=ActionAttack.getRoll(nil,{sDWBPath='pc.weaponlist.bow',nDWBAmmoBefore='1'});
+          assert(pending.sDWBAmmoId and pending.nDWBAmmoBefore==1);
+          local absent=ActionAttack.getRoll(nil,{sDWBPath='pc.weaponlist.bow',nDWBAmmoBefore=''});
+          assert(not absent.bDWBAmmoSpent and not absent.sDWBAmmoId);
+        ''')
+
     def test_auto_apply_preference_defaults_on_and_writes_only_changes(self):
         self.run_lua('DWBPreferences={}; setmetatable(DWBPreferences,{__index=_G});')
         self.lua.globals().loadModule((ROOT / "scripts/preferences.lua").read_text(), self.lua.globals().DWBPreferences)

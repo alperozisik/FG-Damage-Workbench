@@ -5,6 +5,22 @@ This log starts with v0.3.5; earlier releases remain in GitHub Releases.
 
 ## [Unreleased]
 
+## [0.3.10] - 2026-11-20
+
+### Added
+
+- Forge listing and forum drafts, distribution guidance, and explicit compatibility/test boundaries.
+- Product images and cover provenance for Forge publication.
+
+### Fixed
+
+- Read the native weapon ammo value by its full DB path and normalize serialized before-count metadata; ranged attacks no longer raise a number/string comparison error.
+
+### Changed
+
+- Refreshed the usage guides and current acceptance-test summary; kept historical evidence separate.
+- Included Forge documentation and images in the clean source archive.
+
 ## [0.3.9] - 2026-11-17
 
 ### Added
@@ -62,7 +78,7 @@ This log starts with v0.3.5; earlier releases remain in GitHub Releases.
 - The source archive includes the changelog and current illustrated usage guides.
 - Package builds check that the load-message version matches extension metadata.
 
-[Unreleased]: https://github.com/alperozisik/FG-Damage-Workbench/compare/v0.3.9...HEAD
+[Unreleased]: https://github.com/alperozisik/FG-Damage-Workbench/compare/v0.3.10...HEAD
 [0.3.5]: https://github.com/alperozisik/FG-Damage-Workbench/releases/tag/v0.3.5
 
 [0.3.6]: https://github.com/alperozisik/FG-Damage-Workbench/compare/v0.3.5...v0.3.6
@@ -72,3 +88,5 @@ This log starts with v0.3.5; earlier releases remain in GitHub Releases.
 [0.3.8]: https://github.com/alperozisik/FG-Damage-Workbench/compare/v0.3.7...v0.3.8
 
 [0.3.9]: https://github.com/alperozisik/FG-Damage-Workbench/compare/v0.3.8...v0.3.9
+
+[0.3.10]: https://github.com/alperozisik/FG-Damage-Workbench/compare/v0.3.9...v0.3.10

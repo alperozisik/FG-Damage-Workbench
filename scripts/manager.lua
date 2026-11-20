@@ -61,9 +61,10 @@ function onInit()
     local roll = oldAttackRoll(actor, action);
     if action then
       roll.sDWBPath = action.sDWBPath or action.weaponPath;
-      local before=action.nDWBAmmoBefore;
+      -- Native action transport may serialize this extension field as text.
+      local before=tonumber(action.nDWBAmmoBefore);
       if before~=nil then
-        local used=DB.getValue(action.sDWBPath,"ammo",0);
+        local used=DB.getValue(action.sDWBPath .. ".ammo",0);
         if used>before then roll.bDWBAmmoSpent=true;
         elseif used==before then roll.sDWBAmmoId=newId(); roll.nDWBAmmoBefore=before; end
       end
@@ -248,8 +249,9 @@ function queue(source, target, roll, save, direct)
     ctx.ammoSpent=roll.bDWBAmmoSpent==true;
     if roll.sDWBAmmoId then
       local used=DB.getValue(node,"ammo",0);
-      if roll.nDWBAmmoBefore==used then ctx.ammoId=roll.sDWBAmmoId;
-      elseif type(roll.nDWBAmmoBefore)=="number" and used>roll.nDWBAmmoBefore then ctx.ammoSpent=true; end
+      local before=tonumber(roll.nDWBAmmoBefore);
+      if before==used then ctx.ammoId=roll.sDWBAmmoId;
+      elseif before and used>before then ctx.ammoSpent=true; end
     end
   end
   ctx.advantage = roll.bADV or (roll.sDesc or ""):match("%[ADV%]") ~= nil;

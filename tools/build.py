@@ -45,6 +45,8 @@ def source_archive():
     for folder, pattern in (("scripts", "*.lua"), ("ui", "*"), ("tools", "*.py"),
                             ("tests", "*.py"), ("tests", "*.lua"),
                             ("docs/screenshots", "*.png"), ("docs/assets", "*.png"), ("docs/assets", "*.txt"),
+                            ("docs/forge", "*.md"), ("docs/forge", "*.txt"),
+                            ("docs/forge/images", "*.png"), ("docs/forge/images", "*.jpg"),
                             ("graphics", "*.png")):
         files += sorted((ROOT / folder).glob(pattern))
     target = ROOT / "dist" / "DamageWorkbench-Source.zip"

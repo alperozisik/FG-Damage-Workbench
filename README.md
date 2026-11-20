@@ -2,20 +2,28 @@
 
 <img src="docs/assets/damage-workbench-logo.png" alt="Damage Workbench" width="128" />
 
-This usage guide covers **v0.3.9**. [Changelog](CHANGELOG.md).
+This usage guide covers **v0.3.10**. [Changelog](CHANGELOG.md).
 
-On load, chat shows **Damage Workbench v0.3.9 loaded.**
+On load, chat shows **Damage Workbench v0.3.10 loaded.**
 
-![Damage Workbench v0.3.5 announcement example](docs/screenshots/startup-version.png)
+![Damage Workbench v0.3.10 announcement](docs/screenshots/startup-version.png)
 
 Review weapon and cantrip damage in Fantasy Grounds Unity 5E, adjust the dice,
 roll, and apply the result when you are ready.
 
 [Türkçe kullanım](README.tr.md) · [MIT License](LICENSE)
 
-![Damage setup with the type list locked](docs/screenshots/damage-setup.png)
+Tested baseline: **FG Unity 5.1.15**, **CoreRPG/5E 2026-10-06**. Earlier versions
+are outside the supported baseline. DWB uses native 5E action records; exhaustive
+2014/2024 class-feature coverage is not certified. Request interception covers
+**PC weapons and cantrips**, not general levelled spells or NPC attacks. Inventory
+ammunition-stack integrations are not certified. [Current checks and limits](TESTING.md#current-acceptance-summary).
 
-Screenshots show the example panel opened with `/dwb demo`. Appearance follows your active FG theme.
+[Forge description and distribution information](docs/forge/description.md).
+
+![Targeted damage panel with Auto Apply enabled](docs/forge/images/damage-auto-apply.png)
+
+Current targeted screenshots use a synthetic Demo Archer in a sandbox. Older demo examples are labelled below. Appearance follows your active FG theme.
 
 ## Open a damage panel
 
@@ -26,6 +34,8 @@ Screenshots show the example panel opened with `/dwb demo`. Appearance follows y
    With **Automatic**, the panel opens without this confirmation.
 3. Adjust damage and click **Roll**. With **Auto Apply** checked, damage is applied
    as soon as the dice land. Uncheck it before rolling to review the result first.
+
+![Confirm HIT explains already-spent ammunition](docs/forge/images/confirm-hit-ammo.png)
 
 The GM chooses **Ask GM** or **Automatic** under **Options → Damage Workbench →
 Confirm hits before damage adjustment**.
@@ -154,9 +164,9 @@ The turn's reroll count is retained. Each Undo sends the discarded dice, values,
 The panel shows raw damage; resistance, immunity and other target defenses may
 reduce damage actually taken. The pending DWB request ends after Apply.
 
-![Separate setup and result boxes with Undo and Save](docs/screenshots/damage-results.png)
+![Critical damage results with x2, Undo and Save](docs/forge/images/damage-results-x2.png)
 
-The setup stays above the results. This is a targetless demo: **Apply** is disabled and no target takes damage.
+The setup stays above the results. This synthetic targeted example has a raw total of 20; **x2** changes Apply to 40 without changing the dice.
 
 ## Close and reopen a panel
 

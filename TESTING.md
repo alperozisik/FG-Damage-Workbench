@@ -1,7 +1,69 @@
-# Verification record — 2026-11-17
+# Verification record — 2026-11-20
 
-This record covers v0.3.9 and retains earlier verification history. The tables distinguish executed tests from
+This record covers v0.3.10 and retains earlier verification history. The tables distinguish executed tests from
 items that still require acceptance testing. Tests use a separate local sandbox.
+
+## Current acceptance summary
+
+Read this section before the historical records below. Older statements about
+unverified ownership or removed menus describe their named revisions, not the
+current release.
+
+- All **31 automated tests** pass, including the native attack-wrapper regression
+  for string-valued ammo metadata and the correct full-leaf-path DB.getValue signature.
+- Live testing reproduced a ranged-attack error in v0.3.9: the weapon path was
+  passed to the node/field overload of DB.getValue, returning a string default.
+  v0.3.10 reads `<weapon path>.ammo` and normalizes serialized before-count metadata.
+  The remaining ammo reads use actual DB nodes; no ammo DB.setValue calls were added.
+- The final candidate was loaded in a separate **Damage Workbench QA 0.3.10**
+  package selected only in Damage_Workbench_Sandbox. Its runtime files match the
+  release candidate; only the extension display name differs. No test harness is
+  included. The shared released extension and real campaign selection were untouched.
+- FG Unity **5.1.15 (2026-10-28)**, native CoreRPG/5E **2026-10-06**, BCE Gold
+  **7.17**, Advanced Effects **8.0**, Equipped Effects **1.101**, Requested Rolls
+  **2.22.2**, Table Tools Portal and 5e Undo Last **1.4.2** were loaded.
+- Native Demo longbow attacks now land without the comparison error. The live
+  Confirm HIT panel displays the already-spent-ammo Cancel notice without clipping.
+  The prepared panel contains 1d8 + 2d6 Sneak Attack + 6 and opens with Auto Apply checked.
+- Turning Critical on and rolling manually produced exactly **2d8 + 4d6 + 6**,
+  six retained dice, with raw total **20**. x2 displayed **Apply 40 Damage**.
+  Undo logged the discarded six values and raw total, then returned to setup.
+  A second throw totalled **35** and native Apply published the same dice and total.
+  This live critical check toggled Critical after a hit; it was not a natural-20
+  attack. Natural-20 routing was observed in v0.3.9 without Sneak Attack; the
+  critical Sneak Attack preparation path is also covered by automated/native Lua tests.
+- A fresh localhost player connected as the existing sandbox owner. GM approval
+  opened the panel on that client. The player's previously saved Auto Apply **off**
+  preference survived a full process restart. Its manual 2d6 + d8 + 6 throw totalled
+  **19** in both GM and player chat. Player Undo sent the same three discarded
+  values and total to the GM and owner. With Auto Apply switched on, a new throw
+  applied **13** automatically and closed the panel; both chats showed 13.
+- The saved sandbox counter ended at **6** for six attack-button activations,
+  including the two earlier failing attempts and the final targetless shot.
+  Roll, Undo and Apply did not add another ammo use. Target wounds were **457**
+  before the accepted damage, and ended at **500**, capped at max HP: native
+  chat reported the final 13-damage application exceeded remaining HP by 5.
+  No new script errors occurred after the full-leaf-path correction.
+- The already-spent Cancel notice was checked visually. Cancel's no-mutation
+  behavior remains covered by automated tests; the last additional live shot
+  was targetless after the native death/target-removal flow, so it did not
+  create another approval request and was not a live Cancel acceptance check.
+- Product images under `docs/forge/images` are native, cropped captures with a
+  synthetic Demo Archer label. Pointer and automation halo were moved outside the
+  captured panels; UI content was not redrawn. Auto Apply, x2 and the ammo notice
+  are visible. Every Forge image is below 300,000 bytes. The separate cover is an
+  AI-generated illustration, labelled as such, with its prompt retained.
+- The fresh startup screenshot shows the v0.3.10 native red announcement and logo.
+
+Remaining acceptance limits: inventory-stack ammunition integration, two separate
+player clients observing one another and exclusion of other players from private Undo, simultaneous
+owners/multiple targets, exhaustive 2014/2024 class-feature coverage, all optional
+effect syntaxes/themes/scales and paid dice skins. Native weapon used-ammo counting
+is distinct from removing arrows from inventory; Table Tools Portal is not an
+inventory ammunition component. Earlier FG/ruleset versions are not a supported
+baseline. Current compatibility statements do not claim those unexecuted tests.
+
+## Historical verification
 
 ## 0.3.9 Auto Apply, ammunition and critical Sneak Attack
 

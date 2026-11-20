@@ -1,0 +1,1 @@
+Review and adjust PC weapon and cantrip damage in Fantasy Grounds 5E. Add damage effects, configure rerolls, save layouts, and choose Auto Apply or manual review.
