@@ -1,9 +1,9 @@
-# Damage Workbench v0.3.10
+# Damage Workbench v0.3.11
 
-Fixed a live ranged-attack error caused by reading the ammo counter through the wrong DB overload. The attack wrapper now reads the full value path and handles serialized before-count metadata.
+Packages the unchanged MIT license as LICENSE.txt inside the extension to satisfy Forge file-type rules. The repository and source archive retain LICENSE. Builds now reject unsupported file extensions in the extension package.
 
-Updated English/Turkish usage guides, current test evidence and compatibility limits. Added Forge/forum drafts, a labelled illustrative cover and native screenshots of Auto Apply, x2 and the Confirm HIT ammunition notice.
+Runtime behavior is unchanged from v0.3.10, which fixed native ranged-attack ammo reads and refreshed English/Turkish usage guides, Forge/forum drafts and product screenshots. Live GM/player tests and screenshots were captured on v0.3.10; v0.3.11 changes packaging/build validation and version metadata only.
 
-Validation: 31 automated tests passed. Live FG 5.1.15 GM/player testing covered native Longbow attacks, six critical weapon/Sneak Attack dice, Undo audit delivery, manual Apply, player Auto Apply, matching chat totals and persisted player preference. Inventory-stack ammunition integrations and exhaustive 2014/2024 feature coverage are not certified.
+Validation: the automated suite passes, all 22 extension entries satisfy the Forge allow-list, and runtime/UI files match v0.3.10. See TESTING.md for actual live checks and limits.
 
 Assets: DamageWorkbench.ext, DamageWorkbench-Source.zip and SHA256SUMS.txt. Forge must use this exact public release extension asset.

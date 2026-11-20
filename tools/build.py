@@ -5,6 +5,14 @@ import zipfile
 import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
+FORGE_SUFFIXES = {".xml", ".jpg", ".jpeg", ".png", ".lua", ".txt", ".md", ".ttf", ".otf", ".fgf"}
+
+
+def validate_forge_entries(names):
+    """Validate extension entries, not the separate source archive."""
+    invalid = [name for name in names if Path(name).suffix.lower() not in FORGE_SUFFIXES]
+    if invalid:
+        raise ValueError("Unsupported Forge extension entries: " + ", ".join(invalid))
 
 def build(test_harness=False):
     version = ET.parse(ROOT / "extension.xml").findtext("properties/version")
@@ -18,11 +26,13 @@ def build(test_harness=False):
     for path in files:
         if path.suffix == ".xml":
             ET.parse(path)
+    names = ["LICENSE.txt" if path.name == "LICENSE" else path.relative_to(ROOT).as_posix() for path in files]
+    validate_forge_entries(names + (["tests/fg_harness.lua"] if test_harness else []))
     target = ROOT / "dist" / ("DamageWorkbench-Test.ext" if test_harness else "DamageWorkbench.ext")
     target.parent.mkdir(exist_ok=True)
     with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED) as archive:
-        for path in files:
-            info = zipfile.ZipInfo(path.relative_to(ROOT).as_posix(), (2026, 1, 1, 0, 0, 0))
+        for path, name in zip(files, names):
+            info = zipfile.ZipInfo(name, (2026, 1, 1, 0, 0, 0))
             info.compress_type = zipfile.ZIP_DEFLATED
             contents = path.read_bytes()
             if test_harness and path.name == "extension.xml":

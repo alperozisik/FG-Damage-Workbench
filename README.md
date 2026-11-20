@@ -2,9 +2,9 @@
 
 <img src="docs/assets/damage-workbench-logo.png" alt="Damage Workbench" width="128" />
 
-This usage guide covers **v0.3.10**. [Changelog](CHANGELOG.md).
+This usage guide covers **v0.3.11**. [Changelog](CHANGELOG.md).
 
-On load, chat shows **Damage Workbench v0.3.10 loaded.**
+On load, chat shows **Damage Workbench v0.3.11 loaded.**
 
 ![Damage Workbench v0.3.10 announcement](docs/screenshots/startup-version.png)
 
@@ -196,3 +196,5 @@ layout without an open panel only displays a usage message.
 | `/dwb on` | Enable DWB for this user. |
 | `/dwb off` | Use classic FG actions for this user. |
 | `/dwb demo` | Open an example panel without a target. You can try Roll and Undo; Apply is disabled. |
+
+Screenshots were captured with v0.3.10; v0.3.11 changes packaging and version metadata only.

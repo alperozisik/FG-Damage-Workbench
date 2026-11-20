@@ -2,9 +2,9 @@
 
 <img src="docs/assets/damage-workbench-logo.png" alt="Damage Workbench" width="128" />
 
-Bu kullanım rehberi **v0.3.10** içindir. [Değişiklik günlüğü](CHANGELOG.md).
+Bu kullanım rehberi **v0.3.11** içindir. [Değişiklik günlüğü](CHANGELOG.md).
 
-Yüklenince sohbette **Damage Workbench v0.3.10 loaded.** mesajı görünür.
+Yüklenince sohbette **Damage Workbench v0.3.11 loaded.** mesajı görünür.
 
 ![Damage Workbench v0.3.10 yüklenme duyurusu](docs/screenshots/startup-version.png)
 
@@ -193,3 +193,5 @@ yalnızca kullanım mesajı gösterir.
 | `/dwb on` | Bu kullanıcı için DWB'yi aç. |
 | `/dwb off` | Bu kullanıcı için klasik FG akışına geç. |
 | `/dwb demo` | Hedefsiz örnek panel aç. Roll ve Undo denenebilir; Apply devre dışıdır. |
+
+Ekran görüntüleri v0.3.10 ile alındı; v0.3.11 yalnız paketleme ve sürüm metadatasını değiştirir.

@@ -1,4 +1,4 @@
-# Forge publication materials — v0.3.10
+# Forge publication materials — v0.3.11
 
 These are publication drafts, not an announcement that the Forge item or forum thread is live.
 
@@ -31,4 +31,6 @@ Forge must receive the **exact `DamageWorkbench.ext` asset from a public GitHub 
 
 GitHub source: https://github.com/alperozisik/FG-Damage-Workbench
 
-Release candidate version: v0.3.10. Consult `TESTING.md` for executed checks and outstanding acceptance work before making compatibility claims.
+Release candidate version: v0.3.11. Consult `TESTING.md` for executed checks and outstanding acceptance work before making compatibility claims.
+
+v0.3.11 changes packaging and version metadata only; its unchanged runtime/UI is covered by the v0.3.10 captures. The extension packages the MIT license as `LICENSE.txt` to satisfy Forge file-type rules. The source archive retains `LICENSE`.

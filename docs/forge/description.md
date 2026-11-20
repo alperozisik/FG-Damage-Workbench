@@ -30,11 +30,11 @@ Full usage guides: [English](https://github.com/alperozisik/FG-Damage-Workbench/
 
 ![Critical results with x2](images/damage-results-x2.png)
 
-Native v0.3.10 candidate UI with synthetic sandbox data. The first listing cover is an illustration, not a screenshot.
+Native v0.3.10 candidate UI with synthetic sandbox data; v0.3.11 changes packaging/version metadata only. The first listing cover is an illustration, not a screenshot.
 
 ## Requirements and scope
 
-- Release documented here: **v0.3.10**. Tested on Windows with **FG Unity 5.1.15**; earlier verification records identify CoreRPG/5E rulesets dated **2026-10-06**. Earlier FG/ruleset versions are not a supported baseline.
+- Release documented here: **v0.3.11**. Tested on Windows with **FG Unity 5.1.15**; earlier verification records identify CoreRPG/5E rulesets dated **2026-10-06**. Earlier FG/ruleset versions are not a supported baseline.
 - Uses native 5E action records rather than implementing a separate 2014 or 2024 rules engine. Separate, exhaustive 2014/2024 class-feature certification is not claimed.
 - The request workflow supports **PC weapon damage and cantrips**. General levelled-spell and NPC attack interception is outside its current scope. A targetless direct cantrip Damage action follows classic FG behavior.
 - Added effects do not spend spell slots or start concentration. Handle those on the normal character sheet. Unresolved dynamic expressions are rejected rather than guessed. Re-drop conditional damage if the relevant situation changes.

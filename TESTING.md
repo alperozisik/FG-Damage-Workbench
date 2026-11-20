@@ -1,9 +1,14 @@
 # Verification record — 2026-11-20
 
-This record covers v0.3.10 and retains earlier verification history. The tables distinguish executed tests from
+This record covers v0.3.11 and retains earlier verification history. The tables distinguish executed tests from
 items that still require acceptance testing. Tests use a separate local sandbox.
 
 ## Current acceptance summary
+
+The v0.3.11 release changes only packaging/build validation and version metadata.
+The live runtime/UI checks and screenshots below were captured with v0.3.10.
+The release extension packages the unchanged MIT license as LICENSE.txt and all
+22 entries pass the Forge file-extension allow-list; source archives retain LICENSE.
 
 Read this section before the historical records below. Older statements about
 unverified ownership or removed menus describe their named revisions, not the

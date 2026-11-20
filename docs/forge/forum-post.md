@@ -13,7 +13,7 @@ Highlights:
 
 Try `/dwb demo` to explore safely. The GM can require Confirm HIT before the owner's panel opens. Each user can select classic FG behavior with `/dwb off`.
 
-**Current release: v0.3.10.** Tested with FG Unity 5.1.15 and the native 5E action pipeline. This is for PC weapons and cantrips; general levelled-spell and NPC attack interception are outside scope. Separate exhaustive 2014/2024 class-feature coverage and inventory-stack ammunition integrations are not certified. The verification record lists the actual tests and limits.
+**Current release: v0.3.11.** Tested with FG Unity 5.1.15 and the native 5E action pipeline. This is for PC weapons and cantrips; general levelled-spell and NPC attack interception are outside scope. Separate exhaustive 2014/2024 class-feature coverage and inventory-stack ammunition integrations are not certified. The verification record lists the actual tests and limits.
 
 Download: https://github.com/alperozisik/FG-Damage-Workbench/releases/latest
 
