@@ -1,5 +1,9 @@
 # Damage Workbench
 
+[Forum and support](https://www.fantasygrounds.com/forums/showthread.php?88612) · [Forge — pending approval](https://forge.fantasygrounds.com/shop/items/3793/view)
+
+As of **2026-11-20**, the forum thread is published. The free Forge item is pending approval/review and its v0.3.11 build is **QUEUED FOR PROCESSING**, not Live. GitHub downloads remain available; Forge Updater delivery is not yet verified.
+
 <img src="../../docs/assets/damage-workbench-logo.png" alt="Damage Workbench" width="128" />
 
 ![Conceptual cover — illustration, not a screenshot](images/damage-workbench-cover-forge.jpg)
@@ -74,6 +78,6 @@ Native v0.3.10 candidate UI with synthetic sandbox data; v0.3.11 changes packagi
 
 The [public GitHub release](https://github.com/alperozisik/FG-Damage-Workbench/releases/latest) contains `DamageWorkbench.ext`, the source archive and SHA256 checksums. For manual installation, place the `.ext` in FG's data-directory `extensions` folder and enable it before loading the campaign. Close FG before replacing the file to update. Keep one copy; do not load a manual copy alongside a Forge-managed duplicate.
 
-Once this item is published on Forge, subscribe there and run FG's Updater while FG sessions are closed. Disable the extension in the campaign launcher to stop using it; existing character and inventory records remain native FG records. Finish pending DWB damage before disabling or updating.
+After SmiteWorks approves the item, its processed build is assigned to **Live**, and the active/listed public page is verified, subscribe on Forge and run FG's Updater while all FG sessions are closed. Updater delivery must then be verified; submission alone does not make a build downloadable. Disable the extension in the campaign launcher to stop using it; existing character and inventory records remain native FG records. Finish pending DWB damage before disabling or updating.
 
 MIT licensed. [Source and releases](https://github.com/alperozisik/FG-Damage-Workbench) · [Changelog](https://github.com/alperozisik/FG-Damage-Workbench/blob/main/CHANGELOG.md) · [Report an issue](https://github.com/alperozisik/FG-Damage-Workbench/issues).

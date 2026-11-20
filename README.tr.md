@@ -1,5 +1,9 @@
 # Damage Workbench
 
+[Forum ve destek](https://www.fantasygrounds.com/forums/showthread.php?88612) · [Forge — onay bekliyor](https://forge.fantasygrounds.com/shop/items/3793/view)
+
+**2026-11-20** itibarıyla forum konusu yayında. Ücretsiz Forge ürünü onay/inceleme bekliyor; v0.3.11 build durumu **QUEUED FOR PROCESSING**, henüz Live değil. GitHub dosyaları indirilebilir; Forge Updater dağıtımı henüz doğrulanmadı.
+
 <img src="docs/assets/damage-workbench-logo.png" alt="Damage Workbench" width="128" />
 
 Bu kullanım rehberi **v0.3.11** içindir. [Değişiklik günlüğü](CHANGELOG.md).

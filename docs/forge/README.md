@@ -1,12 +1,29 @@
 # Forge publication materials — v0.3.11
 
-These are publication drafts, not an announcement that the Forge item or forum thread is live.
+## Submission status — 2026-11-20
+
+[Forge item 3793](https://forge.fantasygrounds.com/shop/items/3793/view) is **pending approval/review**; the v0.3.11 build is **QUEUED FOR PROCESSING**, not Live. The [forum thread](https://www.fantasygrounds.com/forums/showthread.php?88612) is published. Repository copy records the submission and remains the source for future description updates.
+
+- Item UUID: `a9cfd5ce-e4b9-11f1-a411-0050562be458`; free (**0 Gold**), **5E Compatible / Extension**; install location **Data**.
+- Submitted public GitHub release: **v0.3.11**; `DamageWorkbench.ext` SHA256: `f1ac8b0a855550753d745528349e71c7f11b92d7def32a5ecfa1aebabd8ea5e2`.
+- Five uploaded images are active; the conceptual illustration is the primary cover.
+- Forum posts **775977** (introduction), **775978** (usage/all Settings), **775979** (release/support), authored by **morfil**. Thread 88612 was entered in the Forge form.
+- The submitted description uses native bold headings and paragraphs instead of Markdown tables. There is no outstanding HTML-formatting blocker.
+
+### After approval
+
+- Confirm build processing succeeds and assign/verify the processed build on **Live**.
+- Verify active/listed status and the public Forge page.
+- Verify subscription and actual Updater delivery with all FG sessions closed; compare the delivered package with the public GitHub release hash.
+- Only after actual Live availability is verified, remove the temporary pending-approval notice from forum post 775977 and update README/README.tr and the Forge description together.
+
+Until these checks pass, do not describe Forge distribution as live.
 
 ## Text
 
 - `short-description.txt`: concise listing summary.
 - `description.md`: feature description, usage, requirements, limits and distribution instructions.
-- `forum-post.md`: opening-post draft; add the Forge link after publication.
+- `forum-post.md`: repository opening-post copy and links to the published three-post thread.
 - `cover-provenance.txt`: cover prompt and generation provenance.
 
 The root English and Turkish READMEs remain usage guides. Distribution instructions belong in the listing description.
@@ -31,7 +48,7 @@ Forge must receive the **exact `DamageWorkbench.ext` asset from a public GitHub 
 
 GitHub source: https://github.com/alperozisik/FG-Damage-Workbench
 
-Release candidate version: v0.3.11. Consult `TESTING.md` for executed checks and outstanding acceptance work before making compatibility claims.
+Published GitHub release / submitted Forge build: v0.3.11. Consult `TESTING.md` for executed checks and outstanding acceptance work before making compatibility claims.
 
 v0.3.11 changes packaging and version metadata only; its unchanged runtime/UI is covered by the v0.3.10 captures. The extension packages the MIT license as `LICENSE.txt` to satisfy Forge file-type rules. The source archive retains `LICENSE`.
 

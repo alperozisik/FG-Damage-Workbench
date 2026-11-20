@@ -7,6 +7,8 @@ This log starts with v0.3.5; earlier releases remain in GitHub Releases.
 
 ### Changed
 
+- Recorded the published support forum and Forge item 3793 submission (pending review; build queued, not Live), with approval/Live/Updater verification steps. Documentation only; no binary or tag change.
+
 - Aligned English/Turkish usage guides and Forge description with concrete whole-hit examples, complete settings/persistence details, reroll and critical-die guidance, and saved-layout workflow. Documentation only; v0.3.11 binaries are unchanged.
 
 ## [0.3.11] - 2026-11-20
