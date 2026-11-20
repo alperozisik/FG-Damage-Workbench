@@ -34,3 +34,9 @@ GitHub source: https://github.com/alperozisik/FG-Damage-Workbench
 Release candidate version: v0.3.11. Consult `TESTING.md` for executed checks and outstanding acceptance work before making compatibility claims.
 
 v0.3.11 changes packaging and version metadata only; its unchanged runtime/UI is covered by the v0.3.10 captures. The extension packages the MIT license as `LICENSE.txt` to satisfy Forge file-type rules. The source archive retains `LICENSE`.
+
+## Documentation update checklist
+
+- Keep the English/Turkish READMEs, Forge description, screenshots and complete Settings values/defaults/scope/persistence in sync.
+- Before Forge publication, update this repository's listing draft. Once published, update the live Forge description in the same change set as GitHub documentation.
+- Check behavior against source and keep actual test/screenshot provenance and compatibility limits explicit. A documentation-only change does not require a new binary release or tag.

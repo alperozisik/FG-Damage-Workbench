@@ -22,9 +22,32 @@ kapsam dışıdır. Envanter ok yığınlarını azaltan ek extension entegrasyo
 
 [Forge açıklaması ve dağıtım bilgileri (İngilizce)](docs/forge/description.md).
 
+![Damage Workbench kavramsal kapağı — illüstrasyon, ekran görüntüsü değil](docs/forge/images/damage-workbench-cover-forge.jpg)
+
 ![Auto Apply açık hedefli hasar paneli](docs/forge/images/damage-auto-apply.png)
 
 Güncel hedefli görüntüler sandbox içindeki sentetik Demo Archer kaydını kullanır. Eski demo örnekleri aşağıda ayrıca belirtilir. Görünüm aktif FG temasına göre değişir.
+
+## “Dur, ek hasarımı unuttum” demeden önce
+
+Aynı silah isabetinin hasarı her tur değişebilir. Sneak Attack, Hex, Hunter's Mark veya Divine Smite ekini hasarı uygulamadan önce panelde tamamla. Unutulan bonusları ayrı hasar işlemleri olarak uygulamak concentration kontrollerini veya System Shock gibi toplam hasar eşiğine bağlı kararları değiştirebilir. DWB hazırlanan isabeti tek hasar uygulaması olarak FG'ye gönderir; bu devam kontrollerini DWB otomatik yönetmez. Kurallar, ruleset, diğer extension'lar ve GM belirler.
+
+- **Tüm ekleri birlikte hazırla:** zar ekle, hasar aksiyonu veya uygun **DMG** effect'i bırak. Örneğin **1d8 piercing + 3d6 piercing Sneak Attack + 1d6 necrotic Hex** aynı isabetin içinde, doğru tür kutularında bulunabilir. Hunter's Mark ve Divine Smite için de uygulanabilir bileşeni ekle; zaten eklenmiş bonusu tekrarlama.
+- **Düşük gelen zarı incele:** atıştan önce **Auto Apply** işaretini kaldır. Uygun sonuç zarına çift tıklayıp reroll'u onayla; yeni sonuç geçerlidir. Pencerede karakterin mevcut combat turn içindeki reroll sayısı görünür. Piercer gibi feat'lerin uygunluğunu ve tur başına sınırını sen kontrol edersin; sayaç bunları otomatik dayatmaz. Otomatik zar eşikleri ayrı bir araçtır.
+- **Kritik ek zarını ikinci kez katlama:** ikiye katlanacak zarları **Critical**, yalnız bir kez eklenecekleri **Non-critical** bölümüne koy. Piercer kritik isabetinin ek silah zarı Non-critical'da bir kez eklenir. Bölümün adı zarın kritik isabetten kaynaklanmadığı anlamına gelmez; yalnız katlanmasını yönetir. Sabit bonuslar katlanmaz.
+- **Hasar türünü koru:** piercing, necrotic ve radiant bileşenleri doğru kutularda tut. Tür listesinin kilidini açıp kutu ekleyebilir veya tür değiştirebilir, zarları kutular arasında taşıyabilirsin. FG'nin native savunma çözümü resistance, immunity ve desteklenen **ABSORB** effect'lerini işler; DWB ayrı bir absorb sistemi kurmaz. Hedefin aldığı hasar ham toplamdan farklı olabilir.
+- **Sık kullandığın isabeti kaydet:** **Save → ad ver → adlandırılmış handle'ı Quick Actions'a sürükle**. Sonraki isabette henüz atılmamış panel açıkken Quick Action'ı çalıştır veya kaydı panele bırak. Bu, bütün layout'u değiştirir; hedefi, koşulları ve Critical durumunu gözden geçir. Önceki sonuçlar değil, kurulum ve otomatik reroll eşikleri saklanır.
+
+Her oyuncu yalnız kendi akışı için `/dwb off` ile klasik FG'ye dönebilir; diğerleri DWB kullanmayı sürdürebilir. Oyun sırasında `/dwb on` ile yeniden açılır.
+
+## Ayarlar: Options → Damage Workbench
+
+| Ayar | Tüm değerler ve pratik etkisi | Kapsam ve kalıcılık |
+| --- | --- | --- |
+| **Use Damage Workbench (this user)** | **On (varsayılan):** desteklenen sonraki aksiyonlarda DWB kullanılır. **Off:** klasik FG akışı kullanılır, onaylanmamış istekler kaldırılır; hazırlanmış veya atılmış paneller tamamlanabilir. | Her GM/oyuncunun kişisel tercihidir. O bilgisayarda bu kampanya için saklanır; değişiklik anında GM'ye iletilir. Çevrimiçi karakter sahibinin, aksi halde GM'nin tercihi kullanılır. `/dwb on` ve `/dwb off` aynı ayarı değiştirir. |
+| **Confirm hits before damage adjustment** | **Ask GM (varsayılan):** panel açılmadan GM isabeti onaylar; son değiştiriciler çözülebilir. **Automatic:** ayrı GM onayı beklemeden panel açılır; hasarı otomatik uygulamaz. | GM'nin yönettiği kampanya ayarıdır. Kampanyada saklanır ve reload sonrasında korunur. |
+
+DWB'nin kaydettiği Options girdileri yalnız bu ikisidir. **Auto Apply**, paneldeki ayrı kişisel kutudur: **işaretli (varsayılan)** zarlar durduğunda hasarı uygular; **işaretsiz** sonuçları inceleme, manuel reroll, Undo veya x2 için Apply'a kadar bekletir. Hedefli panelde **Roll** basıldığında tercih, kayıtlı değerden farklıysa o bilgisayarda bu kampanya için kaydedilir. Yalnız kutuyu değiştirmek kaydetmez. Sonraki panel kayıtlı tercihi getirir; demo sonuçları denemek için açık bırakır.
 
 ## Hasar panelini aç
 
@@ -44,6 +67,11 @@ gösterir. Cancel hasar isteğini kapatır ve sayacı olduğu gibi bırakır.
 
 GM, **Options → Damage Workbench → Confirm hits before damage adjustment**
 ayarından **Ask GM** veya **Automatic** seçer.
+
+- **Ask GM (varsayılan):** sahibin hasar paneli açılmadan önce GM isabeti onaylar; sonradan eklenen değiştiriciler bu aşamada çözülebilir.
+- **Automatic:** ayrı GM onayı beklemeden hasar panelini açar. Hasarı otomatik uygulamaz; bunu paneldeki ayrı **Auto Apply** kutusu yönetir.
+
+Bu kampanya ayarını GM yönetir; kampanyada saklanır ve reload sonrasında korunur. Diğer Settings girdisi **Use Damage Workbench (this user)**, aşağıda anlatılan kişisel tercihtir. DWB başka Settings girdisi eklemez.
 
 Cantrip'in **Damage** aksiyonunu doğrudan da kullanabilirsin: hedef seçiliyken
 çalıştır veya bir yaratığın üzerine sürükleyip bırak. Üzerine bıraktığın hedefin
@@ -194,4 +222,4 @@ yalnızca kullanım mesajı gösterir.
 | `/dwb off` | Bu kullanıcı için klasik FG akışına geç. |
 | `/dwb demo` | Hedefsiz örnek panel aç. Roll ve Undo denenebilir; Apply devre dışıdır. |
 
-Ekran görüntüleri v0.3.10 ile alındı; v0.3.11 yalnız paketleme ve sürüm metadatasını değiştirir.
+Güncel hedefli görüntüler ve yüklenme duyurusu v0.3.10 ile alındı; yukarıdaki eski demo örnekleri korunmuştur. v0.3.11 yalnız paketleme ve sürüm metadatasını değiştirir.

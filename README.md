@@ -21,9 +21,34 @@ ammunition-stack integrations are not certified. [Current checks and limits](TES
 
 [Forge description and distribution information](docs/forge/description.md).
 
+![Damage Workbench conceptual cover — illustration, not a screenshot](docs/forge/images/damage-workbench-cover-forge.jpg)
+
 ![Targeted damage panel with Auto Apply enabled](docs/forge/images/damage-auto-apply.png)
 
 Current targeted screenshots use a synthetic Demo Archer in a sandbox. Older demo examples are labelled below. Appearance follows your active FG theme.
+
+## Get the whole hit right before applying it
+
+"Wait, I forgot Sneak Attack." The same weapon hit can deal different damage every turn. Add the missing dice before applying the hit, rather than applying each forgotten bonus separately. Separate damage events can change concentration checks or a threshold-based ruling such as System Shock. DWB prepares one damage application; follow-up checks still depend on your ruleset, extensions and DM.
+
+- **Sneak Attack, Hex, Hunter's Mark or Divine Smite:** increase the dice directly, drop a damage action, or drop a supported **DMG** effect into the unrolled panel. Matching components include their damage types. Add only eligible bonuses that are not already included. For example, prepare **1d8 piercing + 3d6 piercing Sneak Attack + 1d6 necrotic Hex** together, keeping piercing and necrotic in separate groups.
+- **A low damage die:** turn **Auto Apply off** before rolling. Double-click an eligible result die and confirm the reroll; the new result stands. The prompt shows the character's reroll count for the combat turn. You enforce a feature's limits, such as Piercer's once-per-turn use; DWB does not enforce feat eligibility. Automatic per-die reroll thresholds are a separate option.
+- **An extra die on a critical:** put dice that should double in **Critical** and dice added once in **Non-critical**. A Piercer critical's extra weapon die belongs in the latter so it is not doubled again. The section controls multiplication, not whether that extra die was granted by a critical hit. Fixed bonuses do not double.
+- **Mixed damage types:** keep piercing, necrotic, radiant and other components in their correct groups. Unlock the type list to add or change groups and drag dice between them. Native FG defenses resolve resistance, immunity and supported absorption effects; the applied damage can differ from the raw panel total.
+- **Your regular big hit:** prepare a layout, click **Save**, enter a name such as **Rapier + Sneak Attack + Hex**, and drag the named handle into **Quick Actions**. On a later hit, activate it with an unrolled panel open, or drop it into that panel. It replaces the entire layout, so review the target, conditions and critical state. Save retains the setup and automatic reroll thresholds, not previous results.
+
+### Optional for each player
+
+An individual player can keep the classic FG workflow while everyone else uses DWB. Set **Options → Damage Workbench → Use Damage Workbench (this user)** to Off, or enter `/dwb off`. Use `/dwb on` to enable it again during play. This preference affects only that user.
+
+## Settings: Options → Damage Workbench
+
+| Setting | All values and practical effect | Scope and persistence |
+| --- | --- | --- |
+| **Use Damage Workbench (this user)** | **On (default):** use DWB for supported subsequent actions. **Off:** use classic FG actions and dismiss unconfirmed requests; prepared or rolled panels remain available. | Each GM/player controls their own preference. Saved on that computer for this campaign; changes are sent to the GM immediately. An online character owner's preference applies; otherwise the GM's applies. `/dwb on` and `/dwb off` change this same setting during play. |
+| **Confirm hits before damage adjustment** | **Ask GM (default):** GM confirms before the owner's damage panel opens, allowing late modifiers to be resolved. **Automatic:** open without separate GM confirmation; this does not automatically apply damage. | GM-controlled campaign option, saved with the campaign and retained across reloads. |
+
+These are the only two Options entries registered by DWB. **Auto Apply** is a separate personal panel checkbox: **checked (default)** applies damage when the roll lands; **unchecked** leaves results pending for review, manual rerolls, Undo or x2 before Apply. On a targeted panel, clicking **Roll** saves the choice locally for this campaign only if it differs from the saved value. Merely toggling the box does not save it. The next panel restores that saved choice; the demo leaves results open for practice.
 
 ## Open a damage panel
 
@@ -39,6 +64,11 @@ Current targeted screenshots use a synthetic Demo Archer in a sandbox. Older dem
 
 The GM chooses **Ask GM** or **Automatic** under **Options → Damage Workbench →
 Confirm hits before damage adjustment**.
+
+- **Ask GM (default):** require GM confirmation before the owner's damage panel opens, allowing late modifiers to be resolved first.
+- **Automatic:** open the panel without separate GM confirmation. This does not automatically apply damage; **Auto Apply** is a separate panel checkbox.
+
+This is a GM-controlled campaign setting, saved with the campaign across reloads. The other Settings entry, **Use Damage Workbench (this user)**, is a local preference described below. DWB registers no other Settings entries.
 
 You can also use a cantrip's **Damage** action directly: activate it with a target
 selected, or drag it onto a creature. A drop does not require selecting that
@@ -152,7 +182,7 @@ In manual mode, each accepted Roll or Reroll shows the dice and their total in c
 
 Double-click a result die and confirm to **reroll** it. You must use the new
 result: you cannot restore that die's previous value. The prompt shows the
-character's reroll count for the current combat turn.
+character's reroll count for the current combat turn. This is a counter, not automatic enforcement of feat eligibility or once-per-turn limits such as Piercer.
 
 **Undo** discards the entire throw and returns to dice setup, including after
 a reroll. Use it when you chose the wrong dice and want to prepare damage again.
@@ -162,7 +192,7 @@ The turn's reroll count is retained. Each Undo sends the discarded dice, values,
 
 **Apply Damage** publishes the accepted results and applies damage to the target.
 The panel shows raw damage; resistance, immunity and other target defenses may
-reduce damage actually taken. The pending DWB request ends after Apply.
+reduce damage actually taken. Supported native **ABSORB** effects also resolve through FG; DWB does not implement a separate absorption system. The pending DWB request ends after Apply.
 
 ![Critical damage results with x2, Undo and Save](docs/forge/images/damage-results-x2.png)
 
@@ -197,4 +227,4 @@ layout without an open panel only displays a usage message.
 | `/dwb off` | Use classic FG actions for this user. |
 | `/dwb demo` | Open an example panel without a target. You can try Roll and Undo; Apply is disabled. |
 
-Screenshots were captured with v0.3.10; v0.3.11 changes packaging and version metadata only.
+Current targeted screenshots and the startup announcement were captured with v0.3.10; older demo examples are retained above. v0.3.11 changes packaging and version metadata only.
